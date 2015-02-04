@@ -1,0 +1,20 @@
+application: single-will-846
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: true
+
+libraries:
+- name: django
+  version: "1.5"
+  
+builtins:
+- django_wsgi: on
+
+handlers:
+- url: /static/admin
+  static_dir: wfhb_log/static/admin
+  expiration: '0'
+  
+env_variables:
+  DJANGO_SETTINGS_MODULE: wfhb_log.settings

@@ -1,5 +1,8 @@
 # Django settings for wfhb_log project.
 
+import os
+BASE_DIR = os.path.abspath(os.path.dirname(__file__)) + os.sep
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -9,17 +12,29 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '',                      # Or path to database file if using sqlite3.
-        # The following settings are not used with sqlite3:
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',                      # Set to empty string for default.
-    }
-}
+import os
+if (os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine') or
+	os.getenv('SETTINGS_MODE') == 'prod'):
+	# Running on production App Engine, so use a Google Cloud SQL database.
+	DATABASES = {
+		'default': {
+			'ENGINE': 'google.appengine.ext.django.backends.rdbms',
+			'INSTANCE': 'single-will-846:wfhb-log',
+			'NAME': 'wfhb_log',
+		}
+	}
+else:
+	# Running in development, so use a local MySQL database
+	# NOTE: remember to add and remove this when using
+	DATABASES = {
+		'default': {
+			'ENGINE': 'django.db.backends.mysql',
+			'USER': 'root',
+			'PASSWORD': 'RingRingRing506',
+			'HOST': 'localhost',
+			'NAME': 'wfhb_log',
+		}
+	}
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
