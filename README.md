@@ -27,7 +27,7 @@ mess with that much
 
 ## Github Flow
 
-Check out this link for a super - easy for how github works for use : [supa helpful stuff] (https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)<br>
+Check out this link for a super - easy for how github works for use : [supa helpful stuff] (https://guides.github.com/introduction/flow/index.html)<br>
 
 The basic idea is this:<br>
 1. Make a new branch<br>
