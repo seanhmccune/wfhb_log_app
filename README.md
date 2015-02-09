@@ -75,3 +75,20 @@ The basic idea is this:<br>
 * Discuss the changes
  
 * Merge it with the master branch
+<br/>
+
+# common git functions
+```bash
+$git init → creates an empty repository in git
+$git status → shows files in the git repository
+$git add → start tracking a file/ put it in the Staging Area
+$git commit -m “description” → add the file to repository with a small message detailing changes
+$git log → log of all changes that were committed to repository
+$git push -u username → push local files to the web repository
+$git reset → unstage files
+$git checkout -- filename → undo to the last commit
+$git branch → creates a new branch for debugging code while keeping an original in tact
+$git checkout branch name → switch branches
+$git branch -d name → delete a branch
+$git push → push everything to the repository
+```
