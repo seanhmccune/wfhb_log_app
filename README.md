@@ -5,6 +5,7 @@ This is for the wfhb dev team
 
 
 ## Access 
+
 To get access to our shared gmail account 
 
 Email: wfhbDevTeam@gmail.com<br>
@@ -17,6 +18,16 @@ user = root<br>
 password = LittleQueenie242
 
 superuser - the same as the email and password
+
+## Django Tutorials
+
+This is a link to the django docs (make sure to look at the docs for version 1.5): [docs] (https://docs.djangoproject.com/en/1.5/)
+
+This is a link on how to integrate django with GAE: [Django and GAE] (http://howto.pui.ch/post/39245389801/tutorial-django-on-appengine-using-google-cloud)
+
+## GAE
+
+Google app engine tutorial: [tutorial] (http://www.lynda.com/Google-App-Engine-tutorials/Deploying-example-app/144080/159207-4.html?autoplay=true)
 
 ## app.yaml
 
