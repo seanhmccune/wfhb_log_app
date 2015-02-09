@@ -32,22 +32,22 @@ Check out this link for a super - easy for how github works for use : [supa help
 or this: [otha helpful stuff] (https://www.youtube.com/watch?v=oFYyTZwMyAg)
 
 The basic idea is this:<br>
-1. Make a new branch<br>
-To create a new branch via the command line is supereasy.
+Make a new branch<br>
+To create a new branch via the command line is supereasy.<br>
 ```bash
 $ git branch [insert new branch name here]
 ```
-2. Do work on that branch<br>
-This again, isn't terribly difficult
+Do work on that branch<br>
+This again, isn't terribly difficult<br>
 ```bash
 $ git checkout [insert branch name here]
 ```
-3. Issue a pull request<br>
-So you need to push your code to github
+Issue a pull request<br>
+So you need to push your code to github<br>
 ```bash
 $ git push origin [insert branch name here]
 ```
 After you do this, go to github.iu.edu and click the green button next to the dropdown box of the branches<br>
 This will issue the pull request, remember base is the destination branch and compare is the source branch<br>
-4. Discuss the changes<br>
-5. Merge it with the master branch
+Discuss the changes<br>
+Merge it with the master branch
