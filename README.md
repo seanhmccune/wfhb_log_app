@@ -32,6 +32,12 @@ Check out this link for a super - easy for how github works for use : [supa help
 or this: [otha helpful stuff] (https://www.youtube.com/watch?v=oFYyTZwMyAg)
 
 The basic idea is this:<br>
+* Pull from the master branch 
+
+
+        $ git pull origin master
+
+
 * Make a new branch - To create a new branch via the command line is supereasy.
 
 
