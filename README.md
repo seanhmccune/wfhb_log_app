@@ -17,6 +17,8 @@ host = 173.194.250.218<br>
 user = root<br>
 password = LittleQueenie242
 
+Note: Make sure to add your ip address to the list of authenticated networks before you try to access the SQL database.
+
 superuser - the same as the email and password
 
 ## Django Tutorials
