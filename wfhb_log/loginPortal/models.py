@@ -1,6 +1,8 @@
-from django.db import models
+ from django.db import models
 
 # Create your models here.
+
+# don't tell me what to do
 
 class Person(models.Model):
 	email = models.EmailField(max_length=75, primary_key=True)
