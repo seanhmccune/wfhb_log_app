@@ -24,6 +24,9 @@ if (os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine') or
 		}
 	}
 else:
+	
+	# PLEASE CHANGE THIS WHEN DOING LOCAL DEVELOPMENT!!
+	
 	# Running in development, so use a local MySQL database
 	# NOTE: remember to add and remove this when using
 	DATABASES = {
@@ -139,6 +142,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'loginPortal',
 )
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
