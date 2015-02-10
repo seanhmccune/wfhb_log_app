@@ -1,4 +1,4 @@
- from django.db import models
+from django.db import models
 
 # Create your models here.
 
@@ -19,6 +19,7 @@ class Volunteer(models.Model):
 	# will be an integer
 	volunteer = models.ForeignKey(Person, unique=True, related_name="Volunteer")
 	emergency_contact = models.ForeignKey(Person, related_name="Emergency Contact")
+	password = models.CharField(max_length=100)
 	relation_to_contact = models.CharField(max_length=200)
 	date_of_birth = models.DateField('Birthday')
 	start_date = models.DateField('start date')
