@@ -31,6 +31,14 @@ This is a link on how to integrate django with GAE: [Django and GAE] (http://how
 
 Google app engine tutorial: [tutorial] (http://www.lynda.com/Google-App-Engine-tutorials/Deploying-example-app/144080/159207-4.html?autoplay=true)
 
+## Local development
+
+When working on the app locally, you need to change the database to which you connect
+
+You can find this piece of code in this file: /wfhb_log/wfhb_log/settings.py at line 28
+
+If you do not change the database, then django will throw you errors.
+
 ## app.yaml
 
 This is the file that grants us the ability to talk to GAE. The first line tells GAE which application we<br>
