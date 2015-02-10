@@ -24,6 +24,9 @@ if (os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine') or
 		}
 	}
 else:
+	
+	# PLEASE CHANGE THIS WHEN DOING LOCAL DEVELOPMENT!!
+	
 	# Running in development, so use a local MySQL database
 	# NOTE: remember to add and remove this when using
 	DATABASES = {
