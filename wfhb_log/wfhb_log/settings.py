@@ -3,6 +3,10 @@
 import os
 BASE_DIR = os.path.abspath(os.path.dirname(__file__)) + os.sep
 
+
+# this will change the authentication user model to the one that we have defined
+AUTH_USER_MODEL = 'loginPortal.Volunteer'
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
