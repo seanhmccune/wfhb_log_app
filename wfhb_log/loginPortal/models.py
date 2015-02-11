@@ -7,14 +7,15 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 
 # don't tell me what to do
 
-# this allows us to create a new volunteer 
-
+# this is a table that stores all of the emergency contact information
 class Contact(model.models):
 	contact_first_name = models.CharField(max_length=25)
 	contact_last_name = models.CharField(max_length=25)
 	contact_phone_number = models.CharField(max_length=100)
 	relation_to_contact = models.CharField(max_length=200)
 
+# this class helps us create new Volunteers and 'superusers' that is, people who have
+# access to the admin page
 class VolunteerManager(BaseUserManager):
 	
 	# this is the function that creates the a new user
@@ -73,7 +74,7 @@ class Volunteer(AbstractBaseUser, PermissionsMixin):
 	phone_number = models.CharField(max_length=100)
 	date_of_birth = models.DateField('Birthday')
 	start_date = models.DateField('start date')
-	e_contact = models.ForeignKey(Contact, relation="Emergency Contact")
+	contact = models.ForeignKey(Contact, relation="Emergency Contact")
 	is_active = models.BooleanField(default=False)
 	
 	# make sure that the username field points to the email address
