@@ -63,7 +63,7 @@ class VolunteerManager(BaseUserManager):
 			contact_last_name = contact_last_name,
 			contact_phone_number = contact_phone_number,
 			relation_to_contact = relation_to_contact,
-			is_active = False,
+			is_active = True,
 			is_staff = True,
 			is_superuser = True
 		)
@@ -80,7 +80,7 @@ class Volunteer(AbstractBaseUser, PermissionsMixin):
 	# there is an implicit primary key that is declared - its just an integer 
 	# so if you look at this table there will be a primary key called 'id' that 
 	# will be an integer
-	email = models.EmailField(max_length=75, primary_key=True)
+	email = models.EmailField(max_length=75, primary_key=True, db_index=True)
 	first_name = models.CharField(max_length=25)
 	last_name = models.CharField(max_length=25)
 	address = models.CharField(max_length=200)
@@ -112,7 +112,7 @@ class Volunteer(AbstractBaseUser, PermissionsMixin):
 		send_mail(subject, message, from_email, [self.email])
 	
 	def __unicode__(self):
-		return self.volunteer.email
+		return self.email
 		
 class Log(models.Model):
 	# there is an implicit primary key that is declared - its just an integer 
