@@ -4,6 +4,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
+# this is the new user
 from loginPortal.models import Volunteer
 
 class UserCreationForm(forms.ModelForm):
@@ -15,7 +16,7 @@ class UserCreationForm(forms.ModelForm):
 	class Meta:
 		# the model will be the volunteer and there are some required fields
 		model = Volunteer
-		fields = ('email', 'first_name', 'last_name', 'address', 'phone_number', 'date_of_birth', 
+		fields = ('email', 'first_name', 'last_name', 'address', 'phone_number', 'date_of_birth', 'start_date',
 		'contact_first_name', 'contact_last_name', 'contact_phone_number', 'relation_to_contact')
 		
 	# this double checks the password to make sure that they are the same password
@@ -52,7 +53,7 @@ class UserChangeForm(forms.ModelForm):
 class VolunteerAdmin(UserAdmin):
 	# here are the forms that add and change users
 	form = UserChangeForm
-	add = UserCreationForm
+	add_form = UserCreationForm
 	
 	# these are the fields that will be displayed 
 	list_display = ('email', 'first_name', 'last_name', 'address', 'phone_number', 'date_of_birth', 
@@ -67,10 +68,10 @@ class VolunteerAdmin(UserAdmin):
 	)
 	
 	# we use this attribute to create a user
-	add_fieldset = (
+	add_fieldsets = (
 		(None, {
 			'classes': ('wide', ),
-			'fields': ('email', 'first_name', 'last_name', 'address', 'phone_number', 'date_of_birth', 
+			'fields': ('email', 'first_name', 'last_name', 'address', 'phone_number', 'date_of_birth', 'start_date',
 		'contact_first_name', 'contact_last_name', 'contact_phone_number', 'relation_to_contact', 'password1', 'password2'),
 		}),
 	)
