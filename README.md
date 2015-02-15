@@ -27,6 +27,8 @@ This is a link to the django docs (make sure to look at the docs for version 1.5
 
 This is a link on how to integrate django with GAE: [Django and GAE] (http://howto.pui.ch/post/39245389801/tutorial-django-on-appengine-using-google-cloud)
 
+You need to download this to make sure that the phone number field works when you run django locally: [download here](https://github.com/stefanfoulis/django-phonenumber-field)
+
 ## GAE
 
 Google app engine tutorial: [tutorial] (http://www.lynda.com/Google-App-Engine-tutorials/Deploying-example-app/144080/159207-4.html?autoplay=true)
