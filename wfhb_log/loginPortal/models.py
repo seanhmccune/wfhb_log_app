@@ -79,8 +79,8 @@ class VolunteerManager(BaseUserManager):
 class Volunteer(AbstractBaseUser, PermissionsMixin):
 	# there is an implicit primary key that is declared - its just an integer 
 	# so if you look at this table there will be a primary key called 'id' that 
-	# will be an integer
-	email = models.EmailField(max_length=75, primary_key=True, db_index=True)
+	# will be an integer. However, email is still unique and will be used for authentication
+	email = models.EmailField(max_length=75, unique=True, db_index=True)
 	first_name = models.CharField(max_length=25)
 	last_name = models.CharField(max_length=25)
 	address = models.CharField(max_length=200)
