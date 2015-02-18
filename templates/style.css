@@ -1,0 +1,125 @@
+@charset "UTF-8";
+/* CSS Document */
+
+header {
+	background-color: #EAEAEA;
+	padding: 3%;
+	}
+
+#page {
+	background-color: #600;
+	margin: auto;
+	width: 70%;
+	color: #EAEAEA;
+	text-align: center;
+	padding: 1%;
+	font-family:Verdana, Geneva, sans-serif;
+
+	}
+	
+#dropdown {
+	background-color: #EAEAEA;
+	padding: 2%;
+	}
+	
+.dropdownmenu {
+   width: 47%;
+   padding: 1%;
+   font-size: 23px;
+   color: black; 
+   border: 1px solid #999;
+   font-weight: bold;
+   line-height: 1;
+   height: 15%;
+   }
+	
+#button {
+	background-color: #d8d7d7;
+	margin: auto;
+	width: 80%;
+	padding: 5%;
+	text-align: center;
+	}
+	
+img {
+	height: 10%;
+	width: 10%;
+	}
+
+body {
+	background-color: #FFF;
+	padding: 2%;
+	font-weight: bold;
+	}
+	
+a  {  
+	padding: 2%;
+	margin: 2%;
+	border: none; 
+	text-align: center;
+	font-size: 24px;
+	background-color: #c41230;
+	color: white; 
+	cursor: pointer; 
+	color: #FFF;
+	font-weight: bold;
+	text-decoration: none;
+	
+	-webkit-border-radius: 6px; 
+	-moz-border-radius: 6px; 
+	-ms-border-radius: 6px; 
+	-o-border-radius: 6px; 
+	border-radius: 6px; 
+	}
+	
+a:hover {
+	text-decoration: underline;
+	}
+	
+h1 {
+	color: #c41230;
+	font-weight: bold;
+	}
+	
+form, tr {
+	color: #c41230;
+	font-weight: bold; 
+	font-size: 24px;
+	padding: 1%;
+	margin: auto;
+	}	
+	
+input {
+	display: table-column;
+	color: black;
+	font-size: 20px;
+	margin: 1%;
+	}
+	
+label {
+	display: table-column;
+    width:100px;
+	}
+
+#mybutton {  
+	width: 6em; 
+	height: 2em; 
+	border: none; 
+	text-align: center;
+	font-size: 24px;
+	background-color: #c41230;
+	color: white; 
+	cursor: pointer; 
+	margin: auto;
+	font-weight: bold;
+	
+	-webkit-border-radius: 6px; 
+	-moz-border-radius: 6px; 
+	-ms-border-radius: 6px; 
+	-o-border-radius: 6px; 
+	border-radius: 6px; 
+	}
+	 
+#mybutton:hover { 
+	text-decoration: underline;
+	} 
