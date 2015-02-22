@@ -7,7 +7,7 @@ from loginPortal.models import Volunteer, Log
 user = get_user_model()
 
 # this is a buffer view that will eventually become the authentication portal
-def login(request):
+def my_login(request):
 	# just go to this page - it will go to an authentications view when pressed enter
 	return render(request, 'loginPortal/login.html', {})
 	
@@ -19,12 +19,17 @@ def auth_buff(request):
 	
 	if volunteer:
 		login(request, volunteer)
-		return HttpResponse("you've been logged in")
+		return HttpResponseRedirect('/login/%s' % volunteer.id)
 	else:
 		return HttpResponse("bad email and password")
 
 # this is the view that holds the business logic for the clock in and out system
 # right now, it prints a simple statement
-def clock_in(request, id):
-	volunteer = authenticate(email=email, password=password)
-	return HttpResponse("Hello %s, you are at the clock in portal!!!" % volunteer.email)
+def clock_in(request, volunteer_id):
+	volunteer = Volunteer.objects.get(pk=volunteer_id)
+	welcome = "Hello %s, you are at the clock in portal!!!" % volunteer.email
+	return render(request, 'loginPortal/clock_in.html', {'welcome' : welcome})
+	
+def my_logout(request):
+	logout(request)
+	return HttpResponseRedirect('/login/')
