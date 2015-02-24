@@ -29,6 +29,8 @@ This is a link on how to integrate django with GAE: [Django and GAE] (http://how
 
 You need to download this to make sure that the phone number field works when you run django locally: [download here](https://github.com/stefanfoulis/django-phonenumber-field)
 
+This is the tutorial on the base template. [Click Here](http://effectivedjango.com/tutorial/static.html)
+
 ## GAE
 
 Google app engine tutorial: [tutorial] (http://www.lynda.com/Google-App-Engine-tutorials/Deploying-example-app/144080/159207-4.html?autoplay=true)
