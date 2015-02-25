@@ -33,7 +33,7 @@ def clock_in(request, volunteer_id):
 	
 def clock_out(request):
 	# should just load that clock-out page, when you hit clock-in
-	return render(request, 'loginPortal/clockout.html', {})
+	return render(request, 'loginPortal/clock_out.html', {})
 	
 def my_logout(request):
 	logout(request)
