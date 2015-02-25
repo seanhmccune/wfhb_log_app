@@ -2,24 +2,24 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Clock-In</title>
+<title>Untitled Document</title>
 {% load staticfiles %}
 <link rel="stylesheet" type="text/css" href="{% static 'loginPortal/style.css' %}" />
 </head>
 
 <body>
+
+
 <div id="page">
 
 <span style="float: right">
-{% now "D d M Y f s" %} Welcome, user!
+(Running Current Time) Welcome, user!
 </span>
-	
 		<br /><br />
 	<div id="dropdown">
  
-		<select class="dropdownmenu" required="required">
-  <option title="Choose">
-  		Choose Department First...</option>
+		<select class="dropdownmenu">
+  <option title="Choose">Choose Department First...</option>
   <option value="Administration">Administration</option>
   <option value="News">News</option>
   <option value="Music">Music</option>
@@ -28,29 +28,32 @@
         
 
 
-
 		<br /><br />
 
   <div id="button">
 
 
-		<a href="clockout.html">
-        CLOCK-IN
+		<a href="index.html">
+        CLOCK-OUT
         </a>
-        <br /><br />       
+        <br /><br />     
         <a href="missedpunch.html">
         MISSED PUNCH
 		</a>
-		
-		<p>Click <a href="/login/logout">here</a> to logout<p>
 
 	</div>
+    
+    <br />
 
-		<br /><br />
-    <img src="/static/loginPortal/images/wfhb.gif" />
-	
-    	</div>
+Total hours of volunteer work in this department: 13.2
 
+	<br /><br />
+
+		<img src="/static/loginPortal/images/wfhb.gif" />
+
+	</div>
+    
 </div>
+
 </body>
 </html>

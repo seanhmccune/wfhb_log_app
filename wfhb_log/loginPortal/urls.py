@@ -16,4 +16,7 @@ urlpatterns = patterns( ' ',
 	
 	# this is the logout buffer, it will bring you back to the login page after loggin a user out
 	url(r'^logout/', views.my_logout, name="logout")
+	
+	# clockout 
+	url(r'^$', views.clock_out, name="clock_out"),
 )

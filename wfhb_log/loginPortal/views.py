@@ -31,6 +31,10 @@ def clock_in(request, volunteer_id):
 	welcome = "Hello %s, you are at the clock in portal!!!" % volunteer.email
 	return render(request, 'loginPortal/clock_in.html', {'welcome' : welcome})
 	
+def clock_out(request):
+	# should just load that clock-out page, when you hit clock-in
+	return render(request, 'loginPortal/clockout.html', {})
+	
 def my_logout(request):
 	logout(request)
 	return HttpResponseRedirect('/login/')
