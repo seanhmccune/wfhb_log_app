@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Missed Punch</title>
+<link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+<div id="page">
+
+		<!-- WILL SHOW THE CURRENT TIME AND THE USER'S NAME -->
+
+	<span style="float: right">
+ 	(Running, current time) WELCOME, user
+	</span>
+
+							<br /><br />
+							
+	<div id="content">
+ 
+    		
+    		<div id="buttons">
+    		
+    		<!-- THE MISSED PUNCH SHEET WILL ALLOW FOR EITHER CLOCKING-IN OR OUT AND THE TIME THE USER MISSED-->
+    		
+    		<!-- THE USER WILL SELECT THE DEPARTMENT ON THE CLOCK-IN PAGE BEFORE THEY CLICK ON 'MISSED PUNCH' -->
+      				
+      				
+      				<table class="missedpunch">
+      				
+     				<form>
+        				<tr>
+							<td>
+       						<input type="radio" name="group1" value="clock-in">
+        					</td>
+        					
+        					<td>
+							<span id="radio-button-text">CLOCK-IN</span>
+    						</td>
+						</tr>
+       					
+       					<tr>
+							<td>
+    						<input type="radio" name="group1" value="clock-out">
+   							</td>
+  							
+  							<td>
+   							<span id="radio-button-text">CLOCK-OUT</span>
+    						</td>
+    					</tr>
+					</form> 
+       
+     				</table> 
+       		
+       									<br />
+        
+					
+					<form action="index.html" required>
+						MISSED TIME:
+						<input type="text" name="missedpunch" required>
+								
+									<br><br />
+									
+						<center><input id="submitbutton" type="submit" value="SUBMIT"></center>
+					</form>
+	
+			</div>
+
+										<br />
+			
+		  						 <img src="wfhb.gif" />
+
+	</div>
+
+
+
+</body>
+</html>

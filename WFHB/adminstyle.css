@@ -1,0 +1,92 @@
+table {
+	margin: auto;
+	}
+	
+th {
+	font-size: 16px;
+	color: #600;
+	text-align: center;
+	padding: 4%;
+	}
+	
+td {
+	font-size:12px;
+	color: #600;
+	text-align: center;
+	padding: 3%;
+	}
+
+#adminbody {
+	background-color: #F6F6F6;
+	color: #600;
+	margin: auto;
+	}
+	
+#adminpage {
+	margin: auto;
+	color: #EAEAEA;
+	text-align: center;
+	font-family: Verdana;
+	position: relative;
+	color: #600;
+	}
+	
+#admincontent {
+	background-color: #7F7D7D;
+	margin: auto;
+	width: 90%;
+	color: #600;
+	width: 1000px;
+	}
+	
+#adminbuttons {
+	background-color: #EAEAEA;
+	height: 600px;
+	overflow: scroll;
+	}
+	
+#adminsidebar {
+	float: left;
+	width: 25%; 
+	height: 100%;
+	background-color: #d8d7d7;
+	padding: 2%;
+	color: #600;
+	overflow: scroll;
+	}
+	
+#adminsubmitbutton {
+	border: none; 
+	text-align: center;
+	font-size: 12px;
+	background-color: #c41230;
+	color: white; 
+	cursor: pointer; 
+	margin: auto;
+	margin: 1%;
+	padding: 1%;
+	font-weight: bold;
+	font-family: Verdana;
+	text-decoration: none;
+	border-radius: 6px; 
+	-moz-appearance:none;
+	-webkit-appearance:none;
+	}
+	
+#adminsubmitbutton:hover {
+	text-decoration: underline;
+	}
+	
+#verify {
+	font-size: 14px;
+	}
+	
+#adminradio-button-text {	
+	color: #600; 
+	font-size: 14px;
+	}
+	
+#buttons {
+	background-color: #EAEAEA;
+	padding: 5%;
+	}

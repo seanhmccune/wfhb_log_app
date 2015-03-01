@@ -1,0 +1,153 @@
+@charset "UTF-8";
+/* CSS Document */
+
+header {
+	background-color: #EAEAEA;
+	padding: 3%;
+	}
+
+#page {
+	background-color: #600;
+	margin: auto;
+	width: 900px;
+	color: #EAEAEA;
+	text-align: center;
+	padding: 1%;
+	font-family: Verdana;
+	position: relative;
+	}
+		
+#content {
+	background-color: #d8d7d7;
+	margin: auto;
+	width: 90%;
+	padding: 2%;
+	}
+	
+#buttons {
+	background-color: #EAEAEA;
+	padding: 5%;
+	}
+	
+.dropdownmenu {
+   width: 50%;
+   padding: 1%;
+   font-size: 23px;
+   font-family:Verdana;
+   color: black; 
+   border: 1px solid #999;
+   font-weight: bold;
+   line-height: 1;
+   height: 15%;
+   }
+	
+img {
+	height: 12%;
+	width: 12%;
+	}
+
+body {
+	background-color: #FFF;
+	margin-top: 10%;
+	font-weight: bold;
+	}
+	
+p {
+	color: black;
+	font-size: 22px;
+	}
+	
+a {
+	color: #c12340;
+	}
+	
+.missedpunch {
+	margin: auto;
+	width: 30%;
+	}
+	
+h1 {
+	color: #c41230;
+	font-weight: bold;
+	}
+	
+h3 {
+	padding-top: 4%;
+	}
+	
+form, tr {
+	color: #c41230;
+	font-weight: bold; 
+	font-size: 24px;
+	padding: 1%;
+	margin: auto;
+	}	
+	
+input {
+	display: table-column;
+	color: black;
+	font-size: 20px;
+	margin: 1%;
+	}
+	
+label {
+	display: table-column;
+	width: 1%;
+	float: left;
+	padding-left: 15%;
+	}
+
+value { 
+	border: none; 
+	text-align: center;
+	font-size: 24px;
+	background-color: #c41230;
+	color: white; 
+	cursor: pointer; 
+	margin: auto;
+	font-weight: bold;
+	border-radius: 6px; 
+	}
+
+#submitbutton {   
+	border: none; 
+	text-align: center;
+	font-size: 24px;
+	background-color: #c41230;
+	color: white; 
+	cursor: pointer;
+	margin: 2%;
+	padding: 2%;
+	font-weight: bold;
+	font-family: Verdana;
+	text-decoration: none;
+	border-radius: 6px; 
+	-moz-appearance:none;
+	-webkit-appearance:none;
+	}
+	 
+#submitbutton:hover { 
+	text-decoration: underline;
+	} 
+
+#radio-button-text {	
+	color: #c41230; 
+	font-size: 22px;
+	float: left;
+	}
+	
+table {
+	margin: auto;
+	}
+	
+th {
+	font-size: 16px;
+	color: #600;
+	text-align: center;
+	}
+	
+td {
+	font-size:12px;
+	color: #600;
+	text-align: center;
+	}
