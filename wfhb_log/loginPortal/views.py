@@ -35,6 +35,10 @@ def clock_out(request, volunteer_id):
 	# should just load that clock-out page, when you hit clock-in
 	return render(request, 'loginPortal/clock_out.html', {})
 	
+def missedpunch(request, volunteer_id):
+	# loads missedpunch page
+	return render(request, 'loginPortal/missedpunch.html', {})
+	
 def my_logout(request):
 	logout(request)
 	return HttpResponseRedirect('/login/')
