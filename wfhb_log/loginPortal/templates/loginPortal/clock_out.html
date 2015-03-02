@@ -1,59 +1,22 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Untitled Document</title>
-{% load staticfiles %}
-<link rel="stylesheet" type="text/css" href="{% static 'loginPortal/style.css' %}" />
-</head>
-
+{% extends "loginPortal/base.html" %}
+{% block title %} Clock-Out {% endblock %}
 <body>
 
 
-<div id="page">
-
-<span style="float: right">
-(Running Current Time) Welcome, user!
-</span>
-		<br /><br />
-	<div id="dropdown">
- 
-		<select class="dropdownmenu">
-  <option title="Choose">Choose Department First...</option>
-  <option value="Administration">Administration</option>
-  <option value="News">News</option>
-  <option value="Music">Music</option>
-  <option value="Other">Other</option>
-		</select>
-        
-
-
-		<br /><br />
-
-  <div id="button">
-
-
-		<a href="index.html">
-        CLOCK-OUT
-        </a>
-        <br /><br />     
-        <a href="missedpunch.html">
-        MISSED PUNCH
-		</a>
-
-	</div>
-    
-    <br />
-
-Total hours of volunteer work in this department: 13.2
-
+{% block page %}
+	<span style="float: right">
+	 (Running, current time) WELCOME, user
+	</span>	
 	<br /><br />
-
-		<img src="/static/loginPortal/images/wfhb.gif" />
-
-	</div>
-    
-</div>
-
-</body>
-</html>
+{% endblock %}	
+	
+{% block buttons %}
+					<a id="submitbutton" href="/login/clock_out.html">
+        			CLOCK-OUT
+        			</a>
+             
+        			<a id="submitbutton" href="missedpunch.html">
+        			MISSED PUNCH
+					</a>
+					<p>Click <a href="/login/logout">here</a> to logout<p>
+{% endblock %}	
