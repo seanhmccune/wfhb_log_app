@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from loginPortal.models import Volunteer, Log
+from django.views.generic.edit import CreateView
 
 user = get_user_model()
 
@@ -34,6 +35,10 @@ def clock_in(request, volunteer_id):
 def clock_out(request, volunteer_id):
 	# should just load that clock-out page, when you hit clock-in
 	return render(request, 'loginPortal/clock_out.html', {})
+
+class LogCreate(CreateView):
+	model = Log
+	fields = ['volunteer']
 	
 def missedpunch(request, volunteer_id):
 	# loads missedpunch page
