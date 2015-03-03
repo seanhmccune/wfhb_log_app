@@ -7,6 +7,13 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 # this is the new user
 from loginPortal.models import Volunteer
 
+# this is a function that will be used in the actions drop down menu
+# we want to be able to search through all of the in_active users and make them active
+# this will be easier for the Big C
+def make_active(modeladmin, request, queryset):
+	queryset.update(is_active = True)
+
+
 class UserCreationForm(forms.ModelForm):
 	# this is a form for creating new users
 	
@@ -55,19 +62,19 @@ class VolunteerAdmin(UserAdmin):
 	form = UserChangeForm
 	add_form = UserCreationForm
 	
-	# these are the fields that will be displayed 
-	list_display = ('email', 'first_name', 'last_name', 'address', 'phone_number', 'date_of_birth', 
-		'contact_first_name', 'contact_last_name', 'contact_phone_number', 'relation_to_contact')
+	# these are the fields that will be displayed when we are LOOKING at all the users
+	list_display = ('email', 'first_name', 'last_name', 'is_active')
 		
-	# overwriting what is normally displayed by django
+	# overwriting what is normally displayed by django - this will display when we are trying to CHANGE 
+	# some aspect of the user
 	fieldsets = (
-		(None, {'fields' : ('email', 'password', )}), 
-		('Personal Info', {'fields' : ('first_name', 'last_name', 'address', 'phone_number', 'date_of_birth', )}),
+		(None, {'fields' : ('password', )}), 
+		('Personal Info', {'fields' : ('email', 'first_name', 'last_name', 'address', 'phone_number', 'date_of_birth', )}),
 		('Contact Info', {'fields' : ('contact_first_name', 'contact_last_name', 'contact_phone_number', 'relation_to_contact', )}),
 		('Permissions', {'fields' : ('is_active', 'is_staff', 'is_superuser', )}),
 	)
 	
-	# we use this attribute to create a user
+	# we use this attribute to CREATE a user
 	add_fieldsets = (
 		(None, {
 			'classes': ('wide', ),
@@ -76,8 +83,10 @@ class VolunteerAdmin(UserAdmin):
 		}),
 	)
 	
-	search_fields = ('email', )
+	# possible search fields right now
+	search_fields = ('email', 'first_name', 'last_name', )
 	ordering = ('email', )
+	actions = [make_active]
 	filter_horizontal = ()
 	
 # this helps us register the new user with the admin

@@ -116,6 +116,14 @@ class Volunteer(AbstractBaseUser, PermissionsMixin):
 	def __unicode__(self):
 		return self.email
 		
+# these are the four choices from which a worker can select when clocking in
+WORK_CHOICES = (
+	('a', 'Administration'),
+	('n', 'News'),
+	('m', 'Music'),
+	('o', 'Other'),
+)
+		
 class Log(models.Model):
 	# there is an implicit primary key that is declared - its just an integer 
 	# so if you look at this table there will be a primary key called 'id' that 
@@ -124,7 +132,7 @@ class Log(models.Model):
 	clock_in = models.DateTimeField('in')
 	clock_out = models.DateTimeField('out', default=None, null=True)
 	total_hours = models.FloatField(default=0)
-	work_type = models.CharField(max_length=50)
+	work_type = models.CharField(max_length=1, choices=WORK_CHOICES)
 	
 	def set_total_hours(self):
 		if self.clock_out:
