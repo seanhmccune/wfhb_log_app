@@ -1,0 +1,20 @@
+{% extends "loginPortal/base.html" %}
+{% block title %} Clock-Out {% endblock %}
+
+{% block page %}
+	<span style="float: right">
+	 (Running, current time) WELCOME, user
+	</span>	
+	<br /><br />
+{% endblock %}	
+	
+{% block buttons %}
+					<a id="submitbutton" href="/login/clock_out.html">
+        			CLOCK-OUT
+        			</a>
+             
+        			<a id="submitbutton" href="missedpunch.html">
+        			MISSED PUNCH
+					</a>
+					<p>Click <a href="/login/logout">here</a> to logout<p>
+{% endblock %}	

@@ -1,3 +1,34 @@
-<h1>{{ welcome }}</h1>
+{% extends "loginPortal/base.html" %}
 
-<p>Click <a href="/login/logout">here</a> to logout<p>
+{% block title %} Clock-In {% endblock %}
+
+{% block page %}
+	<span style="float: right">
+	 (Running, current time) WELCOME, user
+	</span>	
+	<br /><br />
+{% endblock %}	
+	
+{% block buttons %}						
+ 					<select class="dropdownmenu" required>
+  					<option value="" style="display: none">Select Your Department</option>
+ 					<option value="Administration">Administration</option>
+  					<option value="News">News</option>
+  					<option value="Music">Music</option>
+  					<option value="Other">Other</option>
+					</select>
+	
+									<br /><br />
+										<br />	
+										
+			<!-- THE CLOCK-IN AND MISSED PUNCH BUTTONS -->							
+						<a id="submitbutton" href="clock_out">
+        				CLOCK-IN
+        				</a>
+             
+       					<a id="submitbutton" href="missedpunch">
+        				MISSED PUNCH
+						</a>
+						
+						<p>Click <a href="/login/logout">here</a> to logout<p>
+{% endblock %}	

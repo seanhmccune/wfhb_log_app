@@ -1,0 +1,51 @@
+{% extends "loginPortal/base.html" %}
+{% block title %} Missed Punch {% endblock %}
+
+
+{% block page %}
+	<span style="float: right">
+ 	(Running, current time) WELCOME, user
+	</span>
+
+<br /><br />
+{% endblock %}	
+
+	
+{% block buttons %}      				
+	<table class="missedpunch">
+      				
+    	<form>
+    		<tr>
+				<td>
+       				<input type="radio" name="group1" value="clock-in">
+       			</td>
+        					
+        		<td>
+					<span id="radio-button-text">CLOCK-IN</span>
+    			</td>
+			</tr>
+       					
+       		<tr>
+				<td>
+    				<input type="radio" name="group1" value="clock-out">
+   				</td>
+  							
+  				<td>
+   					<span id="radio-button-text">CLOCK-OUT</span>
+    			</td>
+    		</tr>
+		</form> 
+       
+    </table> 
+       		
+<br />
+        
+					
+<form action="index.html" required>
+	MISSED TIME:
+	<input type="text" name="missedpunch" required>							
+<br><br />								
+	<center><input id="submitbutton" type="submit" value="SUBMIT"></center>
+</form>
+<p>Click <a href="/login/logout">here</a> to logout<p>
+{% endblock %}	
