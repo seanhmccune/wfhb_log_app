@@ -105,7 +105,7 @@ class Volunteer(AbstractBaseUser, PermissionsMixin):
 	objects = VolunteerManager()
 	
 	def get_full_name(self):
-		return self.email
+		return self.first_name + " " + self.last_name
 		
 	def get_short_name(self):
 		return self.email
@@ -141,4 +141,7 @@ class Log(models.Model):
 			self.total_hours = float(minutes) / 60
 		else:
 			print "can't do that yet - you need to clock out"
+			
+	def __unicode__(self):
+		return "clock-in: " + str(self.clock_in) + " clock-out: " + str(self.clock_out) 
 			

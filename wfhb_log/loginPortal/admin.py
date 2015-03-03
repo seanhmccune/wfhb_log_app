@@ -5,7 +5,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
 # this is the new user
-from loginPortal.models import Volunteer
+from loginPortal.models import Volunteer, Log
 
 # this is a function that will be used in the actions drop down menu
 # we want to be able to search through all of the in_active users and make them active
@@ -13,7 +13,7 @@ from loginPortal.models import Volunteer
 def make_active(modeladmin, request, queryset):
 	queryset.update(is_active = True)
 
-
+# this is the new form that will help use create a user
 class UserCreationForm(forms.ModelForm):
 	# this is a form for creating new users
 	
@@ -43,7 +43,8 @@ class UserCreationForm(forms.ModelForm):
 		if commit:
 			user.save()
 		return user
-		
+
+# this is the form that will help use change some aspects of a currently registered user		
 class UserChangeForm(forms.ModelForm):
 	# this is a form for updating users 
 	
@@ -56,7 +57,8 @@ class UserChangeForm(forms.ModelForm):
 	def clean_password(self):
 		# changes the password
 		return self.initial['password'] 
-		
+	
+# finally this is what we will see when we look at the volunteer section on the admin page	
 class VolunteerAdmin(UserAdmin):
 	# here are the forms that add and change users
 	form = UserChangeForm
@@ -89,10 +91,20 @@ class VolunteerAdmin(UserAdmin):
 	actions = [make_active]
 	filter_horizontal = ()
 	
+# this will be the custom admin of the log page
+class LogAdmin(admin.ModelAdmin):
+	# these two changes will determine what shows up in the logs search
+	list_display = ('volunteer', 'clock_in', 'clock_out', 'work_type')
+	search_fields = ('volunteer', 'clock_in', 'clock_out', 'work_type')
+	
+	# we can now filter based on work type and volunteer
+	list_filter = ['volunteer', 'work_type']
+		
+	
 # this helps us register the new user with the admin
 admin.site.register(Volunteer, VolunteerAdmin)
 
-# disables the group use because we will never need it
-admin.site.unregister(Group)
-	
+# register the Log app
+admin.site.register(Log, LogAdmin)
+
 	
