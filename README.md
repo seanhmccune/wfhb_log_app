@@ -31,6 +31,9 @@ You need to download this to make sure that the phone number field works when yo
 
 This is the tutorial on the base template. [Click Here](http://effectivedjango.com/tutorial/static.html)
 
+This is an example of a basic time-tracking app. [Click Here] (https://bitbucket.org/codekoala/django-pendulum/src/55fdd53844e3c59555ed4e61eeb40557776b375a/pendulum/views.py?at=default)
+
+
 ## GAE
 
 Google app engine tutorial: [tutorial] (http://www.lynda.com/Google-App-Engine-tutorials/Deploying-example-app/144080/159207-4.html?autoplay=true)
