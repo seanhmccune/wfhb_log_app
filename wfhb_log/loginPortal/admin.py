@@ -5,8 +5,15 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
 # this is the new user
-from loginPortal.models import Volunteer
+from loginPortal.models import Volunteer, Log
 
+# this is a function that will be used in the actions drop down menu
+# we want to be able to search through all of the in_active users and make them active
+# this will be easier for the Big C
+def make_active(modeladmin, request, queryset):
+	queryset.update(is_active = True)
+
+# this is the new form that will help use create a user
 class UserCreationForm(forms.ModelForm):
 	# this is a form for creating new users
 	
@@ -36,7 +43,8 @@ class UserCreationForm(forms.ModelForm):
 		if commit:
 			user.save()
 		return user
-		
+
+# this is the form that will help use change some aspects of a currently registered user		
 class UserChangeForm(forms.ModelForm):
 	# this is a form for updating users 
 	
@@ -49,25 +57,26 @@ class UserChangeForm(forms.ModelForm):
 	def clean_password(self):
 		# changes the password
 		return self.initial['password'] 
-		
+	
+# finally this is what we will see when we look at the volunteer section on the admin page	
 class VolunteerAdmin(UserAdmin):
 	# here are the forms that add and change users
 	form = UserChangeForm
 	add_form = UserCreationForm
 	
-	# these are the fields that will be displayed 
-	list_display = ('email', 'first_name', 'last_name', 'address', 'phone_number', 'date_of_birth', 
-		'contact_first_name', 'contact_last_name', 'contact_phone_number', 'relation_to_contact')
+	# these are the fields that will be displayed when we are LOOKING at all the users
+	list_display = ('email', 'first_name', 'last_name', 'is_active')
 		
-	# overwriting what is normally displayed by django
+	# overwriting what is normally displayed by django - this will display when we are trying to CHANGE 
+	# some aspect of the user
 	fieldsets = (
-		(None, {'fields' : ('email', 'password', )}), 
-		('Personal Info', {'fields' : ('first_name', 'last_name', 'address', 'phone_number', 'date_of_birth', )}),
+		(None, {'fields' : ('password', )}), 
+		('Personal Info', {'fields' : ('email', 'first_name', 'last_name', 'address', 'phone_number', 'date_of_birth', )}),
 		('Contact Info', {'fields' : ('contact_first_name', 'contact_last_name', 'contact_phone_number', 'relation_to_contact', )}),
 		('Permissions', {'fields' : ('is_active', 'is_staff', 'is_superuser', )}),
 	)
 	
-	# we use this attribute to create a user
+	# we use this attribute to CREATE a user
 	add_fieldsets = (
 		(None, {
 			'classes': ('wide', ),
@@ -76,14 +85,26 @@ class VolunteerAdmin(UserAdmin):
 		}),
 	)
 	
-	search_fields = ('email', )
+	# possible search fields right now
+	search_fields = ('email', 'first_name', 'last_name', )
 	ordering = ('email', )
+	actions = [make_active]
 	filter_horizontal = ()
+	
+# this will be the custom admin of the log page
+class LogAdmin(admin.ModelAdmin):
+	# these two changes will determine what shows up in the logs search
+	list_display = ('volunteer', 'clock_in', 'clock_out', 'work_type')
+	search_fields = ('volunteer', 'clock_in', 'clock_out', 'work_type')
+	
+	# we can now filter based on work type and volunteer
+	list_filter = ['volunteer', 'work_type']
+		
 	
 # this helps us register the new user with the admin
 admin.site.register(Volunteer, VolunteerAdmin)
 
-# disables the group use because we will never need it
-admin.site.unregister(Group)
-	
+# register the Log app
+admin.site.register(Log, LogAdmin)
+
 	
