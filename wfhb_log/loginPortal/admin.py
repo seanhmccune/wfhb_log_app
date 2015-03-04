@@ -95,7 +95,7 @@ class VolunteerAdmin(UserAdmin):
 class LogAdmin(admin.ModelAdmin):
 	# these two changes will determine what shows up in the logs search
 	list_display = ('volunteer', 'clock_in', 'clock_out', 'total_hours', 'work_type')
-	search_fields = ('volunteer', 'clock_in', 'clock_out', 'work_type')
+	search_fields = ('volunteer__email')
 	
 	# we can now filter based on work type and volunteer
 	list_filter = ['volunteer', 'work_type']
