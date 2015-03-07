@@ -1,8 +1,10 @@
+import csv 		# this will help when exporting a csv file from the admin page
 from django import forms
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
+from django.contrib.encoding import smart_str # turns strings into unicode or something like that
 
 # this is the new user
 from loginPortal.models import Volunteer, Log
@@ -12,6 +14,18 @@ from loginPortal.models import Volunteer, Log
 # this will be easier for the Big C
 def make_active(modeladmin, request, queryset):
 	queryset.update(is_active = True)
+	
+# this will be a command that makes sure that you can export the resulting query to a CSV file
+def export_csv(modeladmin, request, queryset):
+	# instead of text/html, we render the response as a text/csv file
+	response = HttpResponse(mimetype='text/csv')
+	response['Content-Disposition'] = 'attachement; filename="output.csv"'
+	writer = csv.writer(response, csv.excel)
+	
+	# this will ensure that the encoding is utf8 so that excel can properly open the file
+	response.write(u'\ufeff'.encode('utf8'))
+	
+	
 
 # this is the new form that will help use create a user
 class UserCreationForm(forms.ModelForm):
