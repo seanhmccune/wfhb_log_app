@@ -1,8 +1,11 @@
+import csv 		# this will help when exporting a csv file from the admin page
 from django import forms
+from django.http import HttpResponse
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
+from django.utils.encoding import smart_str # turns strings into unicode or something like that
 
 # this is the new user
 from loginPortal.models import Volunteer, Log
@@ -12,6 +15,72 @@ from loginPortal.models import Volunteer, Log
 # this will be easier for the Big C
 def make_active(modeladmin, request, queryset):
 	queryset.update(is_active = True)
+	
+# this will be a command that makes sure that you can export the resulting query to a CSV file
+def export_csv_vol(modeladmin, request, queryset):
+	# instead of text/html, we render the response as a text/csv file
+	response = HttpResponse(mimetype='text/csv')
+	response['Content-Disposition'] = 'attachement; filename="volunteer.csv"'
+	writer = csv.writer(response, csv.excel)
+	
+	# this will ensure that the encoding is utf8 so that excel can properly open the file
+	response.write(u'\ufeff'.encode('utf8'))
+	
+	# these are the four fields that will be exported by django (first row)
+	writer.writerow([
+		smart_str(u"Email"),
+		smart_str(u"First Name"),
+		smart_str(u"Last name"),
+		smart_str(u"Start Date"),
+		smart_str(u"Active")
+	])
+	
+	# now we need to write every row that the Big C 
+	for obj in queryset:
+		writer.writerow([
+			smart_str(obj.email),
+			smart_str(obj.first_name),
+			smart_str(obj.last_name),
+			smart_str(obj.start_date),
+			smart_str(obj.is_active)
+		])
+	
+	return response
+	
+def export_csv_log(modeladmin, request, queryset):
+	# instead of text/html, we render the repsonse as a text/csv file
+	response = HttpResponse(mimetype='text/csv')
+	response['Content-Disposition'] = 'attachement; filename="log.csv"'
+	writer = csv.writer(response, csv.excel)
+	
+	# this will ensure that the encoding is utf8 so that excel can properly open the file
+	response.write(u'\ufeff'.encode('utf8'))
+	
+	# these are the four fields that will be exported by django
+	writer.writerow([
+		smart_str(u"Email"),
+		smart_str(u"Clock-in"),
+		smart_str(u"Clock-out"),
+		smart_str(u"Total hours"),
+		smart_str(u"Work type"),
+	])
+	
+	# go through the result of the query set and put it in the csv file
+	for obj in queryset:
+		writer.writerow([
+			smart_str(obj.volunteer),
+			smart_str(obj.clock_in),
+			smart_str(obj.clock_out),
+			smart_str(obj.total_hours),
+			smart_str(obj.work_type),
+		])
+		
+	return response
+
+# rename this function so it looks nice.
+# NOTE: we have the same short description for two distinct functions
+export_csv_vol.short_description = u"Export CSV"
+export_csv_log.short_description = u"Export CSV"
 
 # this is the new form that will help use create a user
 class UserCreationForm(forms.ModelForm):
@@ -65,7 +134,7 @@ class VolunteerAdmin(UserAdmin):
 	add_form = UserCreationForm
 	
 	# these are the fields that will be displayed when we are LOOKING at all the users
-	list_display = ('email', 'first_name', 'last_name', 'is_active')
+	list_display = ('email', 'first_name', 'last_name', 'start_date', 'is_active')
 		
 	# overwriting what is normally displayed by django - this will display when we are trying to CHANGE 
 	# some aspect of the user
@@ -86,20 +155,20 @@ class VolunteerAdmin(UserAdmin):
 	)
 	
 	# possible search fields right now
-	search_fields = ('email', 'first_name', 'last_name', )
+	search_fields = ('email', 'first_name', 'last_name')
 	ordering = ('email', )
-	actions = [make_active]
+	actions = [make_active, export_csv_vol]
 	filter_horizontal = ()
 	
 # this will be the custom admin of the log page
 class LogAdmin(admin.ModelAdmin):
 	# these two changes will determine what shows up in the logs search
 	list_display = ('volunteer', 'clock_in', 'clock_out', 'total_hours', 'work_type')
-	search_fields = ('volunteer', 'clock_in', 'clock_out', 'work_type')
+	search_fields = ('volunteer__email',)
 	
 	# we can now filter based on work type and volunteer
 	list_filter = ['volunteer', 'work_type']
-		
+	actions = [export_csv_log]
 	
 # this helps us register the new user with the admin
 admin.site.register(Volunteer, VolunteerAdmin)
