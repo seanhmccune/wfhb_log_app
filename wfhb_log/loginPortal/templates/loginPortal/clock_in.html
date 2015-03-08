@@ -4,31 +4,22 @@
 
 {% block page %}
 	<span style="float: right">
-	 {{ welcome }}
+	 WELCOME, {{ user }}
 	</span>	
 	<br /><br />
 {% endblock %}	
 	
 {% block buttons %}						
- 					<select class="dropdownmenu" required>
-  					<option value="" style="display: none">Select Your Department</option>
- 					<option value="Administration">Administration</option>
-  					<option value="News">News</option>
-  					<option value="Music">Music</option>
-  					<option value="Other">Other</option>
-					</select>
+<form action="/login/log/" method="POST" enctype="multipart/form-data" >{% csrf_token %}			
+	<center><input type="submit" id="submitbutton" value="CLOCK-IN">
 	
-									<br /><br />
-										<br />	
-										
-			<!-- THE CLOCK-IN AND MISSED PUNCH BUTTONS -->							
-						<a id="submitbutton" href="clock_out">
-        				CLOCK-IN
-        				</a>
-             
-       					<a id="submitbutton" href="missedpunch">
+	<a id="submitbutton" href="missedpunch">
         				MISSED PUNCH
 						</a>
+</form>
+
+ <br />
+             
 						
 						<p>Click <a href="/login/logout">here</a> to logout<p>
 {% endblock %}	

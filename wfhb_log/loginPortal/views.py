@@ -50,7 +50,7 @@ def clock_in(request):
 def log_buff(request):
 	volunteer = request.user
 	clock_in = timezone.now()
-	work_type = request.POST['log_id']
+	work_type = 'a'
 		
 	#if request.method == 'POST':
 	L = volunteer.log_set.create(clock_in = clock_in, work_type = work_type)
