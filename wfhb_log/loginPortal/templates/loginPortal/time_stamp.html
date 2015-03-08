@@ -1,0 +1,20 @@
+{% extends "loginPortal/base.html" %}
+
+{% block title %} Time Stamp {% endblock %}
+
+{% block page %}
+	<span id="logoutbutton">
+	<a href="/login/logout">LOGOUT</a>
+	</span>
+	<br />
+					
+	<span id="logoutbutton">
+	<a href="vinfo.html">{{ welcome }}</a>
+	</span>
+	
+	<br /><br />
+{% endblock %}	
+
+{% block buttons %}
+	<form action='/login/'>
+{% endblock %}

@@ -20,27 +20,38 @@ def auth_buff(request):
 	volunteer = authenticate(email=email, password=password)
 	
 	if volunteer:
-		login(request, volunteer)
-		return HttpResponseRedirect('/login/%s' % volunteer.id)
+		if volunteer.is_active:
+			login(request, volunteer)
+			if volunteer.is_staff:
+				return HttpResponseRedirect('/login/clock_in')
+			else:
+				return HttpResponseRedirect('/login/time_stamp')
+		else:
+			return HttpResponse("You ain't active yets")
 	else:
 		return HttpResponse("bad email and password")
 
 # this is the view that holds the business logic for the clock in and out system
 # right now, it prints a simple statement
-def clock_in(request, volunteer_id):
-	volunteer = Volunteer.objects.get(pk=volunteer_id)
-	welcome = "Hello %s, you are at the clock in portal!!!" % volunteer.email
+def clock_in(request):
+	volunteer = request.user
+	welcome = "Hello %s, you are at the clock in portal" % volunteer.email
 	return render(request, 'loginPortal/clock_in.html', {'welcome' : welcome})
 	
-def clock_out(request, volunteer_id):
+def clock_out(request):
 	# should just load that clock-out page, when you hit clock-in
 	return render(request, 'loginPortal/clock_out.html', {})
 
-class LogCreate(CreateView):
-	model = Log
-	fields = ['volunteer']
+# here are the functions that will deal with the time stamp 
+def time_stamp(request):
+	volunteer = Volunteer.objects.get(pk=volunteer_id)
+	welcome = "Hello %s, you are at the time stamp portal" % volunteer.email
+	return render(request, 'loginPortal/time_stamp.html', {'welcome' : welcome})
 	
-def missedpunch(request, volunteer_id):
+def time_stamp_buff(request):
+	return HttpResponse("Shit went through")	
+	
+def missedpunch(request):
 	# loads missedpunch page
 	return render(request, 'loginPortal/missedpunch.html', {})
 	
