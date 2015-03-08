@@ -5,8 +5,17 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from loginPortal.models import Volunteer, Log
 from django.views.generic.edit import CreateView
+from django.utils import timezone
 
 user = get_user_model()
+
+# this is a tiny dictionary that holds all of the work types
+work_types = dict()
+work_types['Administration'] = 'a'
+work_types['News'] = 'n'
+work_types['Music'] = 'm'
+work_types['Other'] = 'o'
+
 
 # this is a buffer view that will eventually become the authentication portal
 def my_login(request):
@@ -40,16 +49,24 @@ def clock_in(request):
 	
 def clock_out(request):
 	# should just load that clock-out page, when you hit clock-in
+	volunteer = request.user
 	return render(request, 'loginPortal/clock_out.html', {})
 
 # here are the functions that will deal with the time stamp 
 def time_stamp(request):
-	volunteer = Volunteer.objects.get(pk=volunteer_id)
+	volunteer = request.user
 	welcome = "Hello %s, you are at the time stamp portal" % volunteer.email
 	return render(request, 'loginPortal/time_stamp.html', {'welcome' : welcome})
 	
+# this is a tiny dictionary that holds all of the work types
 def time_stamp_buff(request):
-	return HttpResponse("Shit went through")	
+	volunteer = request.user
+	work_type = request.POST['work_type']
+	total_hours = request.POST['total_hours']
+	new_time = volunteer.log_set.create(clock_in = timezone.now(), clock_out = timezone.now(), total_hours = total_hours, work_type = work_types[work_type])
+	new_time.save()
+	response_string = "Vol-id: '{0}'; work type: '{1}', total hours: '{2}'".format(volunteer.email, work_type, total_hours)
+	return HttpResponse(response_string)
 	
 def missedpunch(request):
 	# loads missedpunch page

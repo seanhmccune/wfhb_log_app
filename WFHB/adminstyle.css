@@ -1,3 +1,140 @@
+#adminbody {
+	background-color: #F6F6F6;
+	color: black;
+	margin: auto;
+	}
+	
+#adminpage {
+	margin: auto;
+	color: #d8d7d7;
+	text-align: center;
+	font-family: Verdana;
+	position: relative;
+	color: black;
+	}
+	
+#admincontent {
+	background-color: #7F7D7D;
+	margin: auto;
+	width: 100%;
+	color: black;
+	width: 1300px;
+	}
+	
+#adminbuttons {
+	background-color: #d8d7d7;
+	height: 650px;
+	overflow: scroll;
+	}
+	
+#adminsidebartop {
+	float: left;
+	width: 20%; 
+	height: 38%;
+	background-color: #F6F6F6;
+	padding: 2%;
+	margin-left: 1%;
+	margin-top: 1%;
+	}
+	
+#adminsidebarbottom {
+	float: left;
+	clear: left;
+	width: 20%; 
+	height: 40%;
+	background-color: #F6F6F6;
+	padding: 2%;
+	margin-left: 1%;
+	margin-top: 1%;
+	}
+	
+#admininfo {
+	float: right;
+	width: 69%;
+	height: 88%;
+	background-color: #F6F6F6;
+	margin: 1%;
+	padding: 2%;
+	overflow: scroll;
+	}
+	
+#adminsubmitbutton {
+	border: none; 
+	text-align: center;
+	font-size: 18px;
+	background-color: #c41230;
+	color: white; 
+	cursor: pointer; 
+	margin: auto;
+	padding: 1%;
+	font-weight: bold;
+	font-family: Verdana;
+	text-decoration: none;
+	border-radius: 6px; 
+	-moz-appearance:none;
+	-webkit-appearance:none;
+	}	
+	
+#adminsubmitbutton:hover {
+	text-decoration: underline;
+	}
+	
+#verifybutton {
+	border: none; 
+	text-align: center;
+	font-size: 12px;
+	background-color: #c41230;
+	color: white; 
+	cursor: pointer; 
+	margin: auto;
+	padding: 1%;
+	font-weight: bold;
+	font-family: Verdana;
+	text-decoration: none;
+	border-radius: 6px; 
+	-moz-appearance:none;
+	-webkit-appearance:none;
+	}
+	
+#verifybutton:hover {
+	text-decoration: underline;
+	}
+	
+#verify {
+	font-size: 14px;
+	}
+	
+#buttons {
+	background-color: #EAEAEA;
+	padding: 5%;
+	}
+	
+input {
+	display: table-column;
+	color: black;
+	font-size: 18px;
+	margin: 1%;
+	}
+	
+.dropdownmenu {
+   padding: 1%;
+   font-size: 16px;
+   font-family:Verdana;
+   color: black; 
+   border: 1px solid #999;
+   font-weight: bold;
+   line-height: 1;
+   height: 15%;
+   }
+   
+#verifyradio {
+	
+	}
+   
+h3 {
+	color: black;
+	}
+	
 table {
 	margin: auto;
 	}
@@ -14,79 +151,4 @@ td {
 	color: #600;
 	text-align: center;
 	padding: 3%;
-	}
-
-#adminbody {
-	background-color: #F6F6F6;
-	color: #600;
-	margin: auto;
-	}
-	
-#adminpage {
-	margin: auto;
-	color: #EAEAEA;
-	text-align: center;
-	font-family: Verdana;
-	position: relative;
-	color: #600;
-	}
-	
-#admincontent {
-	background-color: #7F7D7D;
-	margin: auto;
-	width: 90%;
-	color: #600;
-	width: 1000px;
-	}
-	
-#adminbuttons {
-	background-color: #EAEAEA;
-	height: 600px;
-	overflow: scroll;
-	}
-	
-#adminsidebar {
-	float: left;
-	width: 25%; 
-	height: 100%;
-	background-color: #d8d7d7;
-	padding: 2%;
-	color: #600;
-	overflow: scroll;
-	}
-	
-#adminsubmitbutton {
-	border: none; 
-	text-align: center;
-	font-size: 12px;
-	background-color: #c41230;
-	color: white; 
-	cursor: pointer; 
-	margin: auto;
-	margin: 1%;
-	padding: 1%;
-	font-weight: bold;
-	font-family: Verdana;
-	text-decoration: none;
-	border-radius: 6px; 
-	-moz-appearance:none;
-	-webkit-appearance:none;
-	}
-	
-#adminsubmitbutton:hover {
-	text-decoration: underline;
-	}
-	
-#verify {
-	font-size: 14px;
-	}
-	
-#adminradio-button-text {	
-	color: #600; 
-	font-size: 14px;
-	}
-	
-#buttons {
-	background-color: #EAEAEA;
-	padding: 5%;
 	}

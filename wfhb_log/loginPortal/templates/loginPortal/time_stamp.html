@@ -16,5 +16,26 @@
 {% endblock %}	
 
 {% block buttons %}
-	<form action='/login/'>
+	<form action='/login/time_stamp_buff/' method='POST'>{% csrf_token %}
+	 	<span style="background-color: #E4E4E4; padding: 2%;">
+			
+			<select class="dropdownmenu" name="work_type" required>
+				<option value="" style="display: none">Select Your Department</option>
+				<option value="Administration">Administration</option>
+				<option value="News">News</option>
+				<option value="Music">Music</option>
+				<option value="Other">Other</option>
+			</select>
+			
+			<input type="text" name="total_hours" placeholder="Hours Volunteered" required>
+		
+		</span>
+		
+			<center>
+			<input id="submitbutton" type="submit" value="SUBMIT">
+			</center>
+			
+		<span>
+		
+	</form>
 {% endblock %}

@@ -1,5 +1,3 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>Log In</title>
@@ -10,39 +8,59 @@
 
 <div id="page">
 	
-										<br />
+			
+					<!-- *** FROM HERE TO... *** -->
+		
+						<div id="login">
+						
+						LOG IN TO YOUR WFHB ACCOUNT
+						
+						</div>
+    
+    				<!-- *** HERE AND... *** -->
 	
 	
 		<div id="content">
 		
-			<!-- THIS PAGE WILL NOT SHOW THE CURRENT TIME OR THE USER'S NAME -->
-    
     			
     			<div id="buttons">
     			
-    			<!-- THE USER'S WILL LOG IN BELOW WITH THEIR EMAIL AND PASSWORD -->
  
-								<h1>LOG IN</h1>
- 
- 				<form action="index.html" enctype="multipart/form-data">
+ 				<form action="/login/auth/" method="POST" enctype="multipart/form-data"> {% csrf_token %}
 	
 				
-					<label>EMAIL:</label>
+				<!-- *** FROM HERE TO (GOES IN BUTTONS DIV)... *** -->
+				
+				
+				<table>
+				
+				<tr>
+					<td>
 					
+						<input id="logininput" placeholder="EMAIL" type="" name="" required>
 					
-						<input type="text" name="firstname" value="" required>
-										
-										<br />
-   					   
-					<label>PASSWORD:</label> 
-					   
-						<input type="password" name="lastname" value="" required>
+					</td>					
+								
+   				</tr>
+   				
+   				
+   				<tr>	   
+					<td>
+						<input id="logininput" placeholder="PASSWORD" type="password" name=""  required>
             
-            							<br />
-            
-						<center><input type="submit" id="submitbutton"  value="SUBMIT"></center>
-
+            		</td>
+            		
+				</tr>
+						
+				</table>
+						<br />
+														
+						<center><a href="vclockin.html" id="loginbutton">LOG IN</a></center>
+					
 				</form>
+				
+				
+				<!-- *** HERE *** -->
         
         		</div>
         
