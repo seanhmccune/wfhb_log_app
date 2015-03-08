@@ -3,9 +3,22 @@
 {% block title %} Clock-In {% endblock %}
 
 {% block page %}
-	<span style="float: right">
+	<span style="float: left; padding: 1%; text-align: left;">
+	Total Hours:
+	<br />
+	
+	Total Quarterly Hours:
+	</span>
+	
+	<span id="logoutbutton">
+	<a href="/login/logout">LOGOUT</a>
+	</span>
+	
+	<br />
+	<span style="float: right; padding-right: 1%;">
 	 WELCOME, {{ user }}
 	</span>	
+	
 	<br /><br />
 {% endblock %}	
 	
@@ -21,5 +34,5 @@
  <br />
              
 						
-						<p>Click <a href="/login/logout">here</a> to logout<p>
+
 {% endblock %}	

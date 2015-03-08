@@ -4,7 +4,7 @@
 #page {
 	background-color: #C12340;
 	margin: auto;
-	width: 70%;
+	width: 950px;
 	color: white;
 	text-align: center;
 	font-family: Verdana;
@@ -49,8 +49,8 @@ table {
    }
    
 img {
-	height: 12%;
-	width: 12%;
+	height: 90px;
+	width: 100px;
 	}
 
 body {
@@ -71,7 +71,7 @@ p {
 	
 h5 {
 	color: #c41230;
-	font-weight: normal;
+	text-align: left;
 	}
 
 h2 {
@@ -128,6 +128,7 @@ value {
 	width: 20%;
 	margin: 2%;
 	padding: 1%;
+	border-radius: 0px;
 	font-weight: bold;
 	font-family: Verdana;
 	text-decoration: none;
@@ -169,7 +170,6 @@ value {
 	} 
 	
 #logoutbutton {
-	text-decoration: underline;
 	border: none; 
 	text-align: left;
 	font-size: 14px; 
@@ -178,7 +178,7 @@ value {
 	font-family: Verdana;
 	text-decoration: none;
 	float: right;
-	padding-right: 4%;
+	padding-right: 1%;
 	}
 	
 a {
@@ -189,3 +189,16 @@ a {
 #logoutbutton:hover { 
 	text-decoration: underline;
 	} 
+	
+#hourinfo {
+	display: none;
+	}
+	
+dd { 
+	background-color: #EAEAEA;
+	color: black;
+	}
+	
+dd:nth-child(odd) { 
+	background: #E4E4E4; 
+	}
