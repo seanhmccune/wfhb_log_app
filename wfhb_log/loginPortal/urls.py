@@ -14,8 +14,12 @@ urlpatterns = patterns( ' ',
 	# /login/3 - this is for the clock in page
 	url(r'^clock_in/$', views.clock_in, name="clock_in"),
 	
+	url(r'^log/', views.log_buff, name="log_buff"),
+	
 	#clock-out
 	url(r'^clock_out/$', views.clock_out, name="clock_out"),
+	
+	url(r'^out/', views.out_buff, name="out_buff"),
 	
 	#missedpunch
 	url(r'^missedpunch/$', views.missedpunch, name="missedpunch"),
