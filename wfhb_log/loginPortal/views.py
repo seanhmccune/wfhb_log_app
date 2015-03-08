@@ -44,19 +44,42 @@ def auth_buff(request):
 # right now, it prints a simple statement
 def clock_in(request):
 	volunteer = request.user
-	welcome = "Hello %s, you are at the clock in portal" % volunteer.email
-	return render(request, 'loginPortal/clock_in.html', {'welcome' : welcome})
+	user = volunteer.email
+	return render(request, 'loginPortal/clock_in.html', {'user' : user})
+	
+def log_buff(request):
+	volunteer = request.user
+	clock_in = timezone.now()
+	work_type = request.POST['log_id']
+		
+	#if request.method == 'POST':
+	L = volunteer.log_set.create(clock_in = clock_in, work_type = work_type)
+	L.save()
+	return HttpResponseRedirect('/login/clock_out')
 	
 def clock_out(request):
 	# should just load that clock-out page, when you hit clock-in
 	volunteer = request.user
-	return render(request, 'loginPortal/clock_out.html', {})
+	user = volunteer.email
+	return render(request, 'loginPortal/clock_out.html', {'user' : user})
+	
+def out_buff(request):
+	volunteer = request.user
+	now = timezone.now()
+	clock_in = Log.objects.get(volunteer__email = volunteer.email, clock_out = None).clock_in
+	L = Log.objects.filter(volunteer__email = volunteer.email, clock_out = None)
+	L.update(clock_out = now)
+	diff = now - clock_in
+	minutes = diff.days * 1440 + diff.seconds // 60
+	L.update(total_hours = float(minutes) / 60)	
+	return HttpResponseRedirect('/login/clock_in')
 
 # here are the functions that will deal with the time stamp 
 def time_stamp(request):
 	volunteer = request.user
+	user = volunteer.email
 	welcome = "Hello %s, you are at the time stamp portal" % volunteer.email
-	return render(request, 'loginPortal/time_stamp.html', {'welcome' : welcome})
+	return render(request, 'loginPortal/time_stamp.html', {'user' : user})
 	
 # this is a tiny dictionary that holds all of the work types
 def time_stamp_buff(request):
