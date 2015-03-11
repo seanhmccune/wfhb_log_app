@@ -3,15 +3,21 @@
 {% block title %} Time Stamp {% endblock %}
 
 {% block page %}
+	<span style="float: left; padding: 1%; text-align: left;">
+	Total Hours:
+	<br />
+	
+	Total Quarterly Hours:
+	</span>
+	
 	<span id="logoutbutton">
 	<a href="/login/logout">LOGOUT</a>
 	</span>
-	<br />
-					
-	<span id="logoutbutton">
-	<a href="vinfo.html">{{ welcome }}</a>
-	</span>
 	
+	<br />
+	<span style="float: right; padding-right: 1%;">
+	 WELCOME, {{ user }}
+	</span>
 	<br /><br />
 {% endblock %}	
 
@@ -28,6 +34,7 @@
 			</select>
 			
 			<input type="text" name="total_hours" placeholder="Hours Volunteered" required>
+			<input type="date" name="date" placeholder="Date Volunteered" required>
 		
 		</span>
 		

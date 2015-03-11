@@ -142,10 +142,6 @@ class Log(models.Model):
 		else:
 			print "can't do that yet - you need to clock out"
 	
-	def last_quarter_times(self, Date):
-		check_date = None
-		
-	
 	def __unicode__(self):
 		return "clock-in: " + str(self.clock_in) + " clock-out: " + str(self.clock_out) 
 			
