@@ -59,7 +59,11 @@ def clock_in(request):
 	user = volunteer.email
 	# snag all of the times when this volunteer logged in
 	overall_hours_raw = Log.objects.filter(volunteer__email = volunteer.email).aggregate(Sum('total_hours'))
-	overall_hours = int(overall_hours_raw['total_hours__sum'])
+	overall_hours = overall_hours_raw['total_hours__sum']
+	if overall_hours:
+		overall_hours = int(overall_hours)
+	else:
+		overall_hours = 0
 	
 	print global_now.year
 	return render(request, 'loginPortal/clock_in.html', {'user' : user, 'overall_hours' : overall_hours})
@@ -79,7 +83,11 @@ def clock_out(request):
 	user = volunteer.email
 	# snag all of the times when this volunteer logged in
 	overall_hours_raw = Log.objects.filter(volunteer__email = volunteer.email).aggregate(Sum('total_hours'))
-	overall_hours = int(overall_hours_raw['total_hours__sum'])
+	if overall_hours:
+		overall_hours = int(overall_hours)
+	else:
+		overall_hours = 0
+	
 	return render(request, 'loginPortal/clock_out.html', {'user' : user, 'overall_hours' : overall_hours})
 	
 def out_buff(request):
