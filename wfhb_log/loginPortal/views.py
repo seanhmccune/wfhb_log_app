@@ -20,11 +20,12 @@ work_types['Other'] = 'o'
 
 # this will help us figure out the total quarterly hours on the views
 global_now = timezone.now()
+global_year = global_now.year
 date_list = ( 
-	datetime.date(global_now.year, 1, 1), 
-	datetime.date(global_now.year, 4, 1), 
-	datetime.date(global_now.year, 7, 1), 
-	datetime.date(global_now.year, 10, 1)
+	datetime.date(global_year, 1, 1), 
+	datetime.date(global_year, 4, 1), 
+	datetime.date(global_year, 7, 1), 
+	datetime.date(global_year, 10, 1)
 )
 
 # this is a buffer view that will eventually become the authentication portal
@@ -41,20 +42,29 @@ def auth_buff(request):
 	if volunteer:
 		if volunteer.is_active:
 			login(request, volunteer)
-			if Log.objects.filter(volunteer__email = volunteer.email, clock_out = None):
+
+			# we probably don't need this, but just in case
+			vol_bool = volunteer.is_staff
+			
+			# if they haven't clocked out and are staff
+			if Log.objects.filter(volunteer__email = volunteer.email, clock_out = None) and vol_bool:
 				return HttpResponseRedirect('/login/clock_out')
-			if volunteer.is_staff:
+			
+			#staff looking to clock in
+			elif vol_bool:
+			
 				return HttpResponseRedirect('/login/clock_in')
+			
+			# time stamp
 			else:
 				return HttpResponseRedirect('/login/time_stamp')
-			# CODE GOES HERE ^^^^^^^^^^^^^
+		
 		else:
 			return HttpResponse("You'ze ain't active yets")
 	else:
 		return HttpResponse("bad email and password")
 
 # this is the view that holds the business logic for the clock in and out system
-# right now, it prints a simple statement
 def clock_in(request):
 	volunteer = request.user
 	user = volunteer.email
@@ -66,7 +76,6 @@ def clock_in(request):
 	else:
 		overall_hours = 0
 	
-	print global_now.year
 	return render(request, 'loginPortal/clock_in.html', {'user' : user, 'overall_hours' : overall_hours})
 	
 def log_buff(request):
@@ -84,6 +93,7 @@ def clock_out(request):
 	user = volunteer.email
 	# snag all of the times when this volunteer logged in
 	overall_hours_raw = Log.objects.filter(volunteer__email = volunteer.email).aggregate(Sum('total_hours'))
+	overall_hours = overall_hours_raw['total_hours__sum']
 	if overall_hours:
 		overall_hours = int(overall_hours)
 	else:
