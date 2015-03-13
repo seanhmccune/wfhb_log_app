@@ -41,7 +41,8 @@ def auth_buff(request):
 	if volunteer:
 		if volunteer.is_active:
 			login(request, volunteer)
-			# SEAN PUT CODE HERE VVVVVVVV
+			if Log.objects.filter(volunteer__email = volunteer.email, clock_out = None):
+				return HttpResponseRedirect('/login/clock_out')
 			if volunteer.is_staff:
 				return HttpResponseRedirect('/login/clock_in')
 			else:
