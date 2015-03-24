@@ -28,11 +28,41 @@ date_list = (
 	datetime.date(global_year, 10, 1)
 )
 
+def overall_hours(email):
+	# snag all of the hours that they have worked so far
+	overall_hours_raw = Log.objects.filter(volunteer__email = email).aggregate(Sum('total_hours'))
+	overall_hours = overall_hours_raw['total_hours__sum']
+	if overall_hours:
+		overall_hours = round(overall_hours, 2)
+	else:
+		overall_hours = 0
+		
+	return overall_hours
+	
+def quarterly_hours(email):
+	# cycle through the dates to see where to start and end
+	for i in range(0, len(date_list)):
+		start = date_list( i )
+		end = date_list( i + 1 % 4 )
+		# if we found the right two times break out of the loop
+		if global_now >= start and global_now <= end:
+			break
+	
+	# snag the hours for just this quarter
+	quarterly_hours_raw = Log.objects.filter(volunteer__email = email, clock_in >= start, clock_in <= end).aggregate(Sum('total_hours'))
+	quarterly_hours = quarterly_hours_raw['total_hours__sum']
+	if quarterly_hours:
+		quarterly_hours = round(quarterly_hours, 2)
+	else:
+		quarterly_hours = 0
+		
+	return quarterly_hours
+	  
+
 # this is a buffer view that will eventually become the authentication portal
 def my_login(request):
 	# just go to this page - it will go to an authentications view when pressed enter
 	return render(request, 'loginPortal/login.html', {})
-
 
 #this is a registration form
 def regi(request):
@@ -95,15 +125,11 @@ def auth_buff(request):
 def clock_in(request):
 	volunteer = request.user
 	user = volunteer.email
-	# snag all of the times when this volunteer logged in
-	overall_hours_raw = Log.objects.filter(volunteer__email = volunteer.email).aggregate(Sum('total_hours'))
-	overall_hours = overall_hours_raw['total_hours__sum']
-	if overall_hours:
-		overall_hours = int(overall_hours)
-	else:
-		overall_hours = 0
+	# snag all of the times when this volunteer logged in overall and quarterly
+	total_hours = overall_hours(volunteer.email)
+	quarterly_hours = quarterly_hours(volunteer.email)
 	
-	return render(request, 'loginPortal/clock_in.html', {'user' : user, 'overall_hours' : overall_hours})
+	return render(request, 'loginPortal/clock_out.html', {'user' : user, 'overall_hours' : total_hours, 'quarterly_hours' : quarterly_hours})
 	
 def log_buff(request):
 	volunteer = request.user
@@ -118,15 +144,11 @@ def clock_out(request):
 	# should just load that clock-out page, when you hit clock-in
 	volunteer = request.user
 	user = volunteer.email
-	# snag all of the times when this volunteer logged in
-	overall_hours_raw = Log.objects.filter(volunteer__email = volunteer.email).aggregate(Sum('total_hours'))
-	overall_hours = overall_hours_raw['total_hours__sum']
-	if overall_hours:
-		overall_hours = int(overall_hours)
-	else:
-		overall_hours = 0
+	# snag all of the times when this volunteer logged in overall and quarterly
+	total_hours = overall_hours(volunteer.email)
+	quarterly_hours = quarterly_hours(volunteer.email)
 	
-	return render(request, 'loginPortal/clock_out.html', {'user' : user, 'overall_hours' : overall_hours})
+	return render(request, 'loginPortal/clock_out.html', {'user' : user, 'overall_hours' : total_hours, 'quarterly_hours' : quarterly_hours})
 	
 def out_buff(request):
 	volunteer = request.user
