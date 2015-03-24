@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout, get_user_model
-from loginPortal.models import Volunteer, Log , RegiForm, VolunteerManager
+from loginPortal.models import Volunteer, Log
 from django.views.generic.edit import CreateView
 from django.utils import timezone
 from django.db.models import Sum
@@ -32,33 +32,6 @@ date_list = (
 def my_login(request):
 	# just go to this page - it will go to an authentications view when pressed enter
 	return render(request, 'loginPortal/login.html', {})
-
-
-#this is a registration form
-def regi(request):
-	if request.method == 'POST':
-		form = RegiForm(request.POST)
-		if form.is_valid():
-			email = form.cleaned_data['email']
-			first_name = form.cleaned_data['first_name']
-			last_name = form.cleaned_data['last_name']
-			address = form.cleaned_data['address']
-			phone_number = form.cleaned_data['phone_number']
-			date_of_birth = form.cleaned_data['date_of_birth']
-			#date_of_birth = datetime.date.today()
-			#start_date = datetime.date.today()
-			start_date = form.cleaned_data['start_date']
-			contact_first_name = form.cleaned_data['contact_first_name']
-			contact_last_name = form.cleaned_data['contact_last_name']
-			contact_phone_number = form.cleaned_data['contact_phone_number']
-			relation_to_contact = form.cleaned_data['relation_to_contact']
-			password = form.cleaned_data['password']
-			Volunteer.objects.create_user(email, first_name, last_name, address, phone_number, date_of_birth, contact_first_name, contact_last_name, contact_phone_number, relation_to_contact, password)
-  
-			return HttpResponse('/Thanks/')
-	else:
-		form = RegiForm()
-	return render(request, 'loginPortal/regiform.html',{'form' : form})
 	
 # this is our authentication buffer, it takes the post from the login page and then just goes to work
 def auth_buff(request):

@@ -7,9 +7,6 @@ from loginPortal import views
 urlpatterns = patterns( ' ', 
 	# ex /loginPortal/
 	url(r'^$', views.my_login, name="login"),
-
-	# this is the form
-	url(r'^regi/', views.regi, name="regi"),
 	
 	# this is the authentication buffer
 	url(r'^auth/', views.auth_buff, name="auth_buff"),
