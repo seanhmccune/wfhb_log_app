@@ -27,6 +27,11 @@ urlpatterns = patterns( ' ',
 	#missedpunch
 	url(r'^missedpunch/$', views.missedpunch, name="missedpunch"),
 	
+	#new_password
+	url(r'^newpassword/$', views.new_password, name="newpassword"),
+	
+	url(r'^newpasswordbuff/$', views.new_password_buff, name="newpasswordbuff"),
+	
 	# time_stamp - this page is for volunteers who need to record their hours
 	# NOTE: this is not the clock-in / clock-out page. They just enter total hours worked
 	url(r'^time_stamp/$', views.time_stamp, name="time_stamp"),

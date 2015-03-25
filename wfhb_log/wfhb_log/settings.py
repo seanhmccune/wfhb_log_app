@@ -8,6 +8,9 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__)) + os.sep
 # this will change the authentication user model to the one that we have defined
 AUTH_USER_MODEL = 'loginPortal.Volunteer'
 
+# this will change the email backend to we can send emails
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -36,11 +39,9 @@ else:
 	DATABASES = {
 		'default': {
 			'ENGINE': 'django.db.backends.mysql',
-			'NAME': 'gittest',
+			'NAME': 'wfhb_log',
 			'USER': 'root',
-			'PASSWORD': '1234',
-			'HOST': '',
-			'PORT': '', 
+			'PASSWORD': 'RingRingRing506',
 		}
 	}
 
