@@ -28,6 +28,7 @@ date_list = [
 	date(global_year, 10, 1)
 ]
 
+# see how many hours someone worked since they've started
 def overall_hours(email):
 	# snag all of the hours that they have worked so far
 	overall_hours_raw = Log.objects.filter(volunteer__email = email).aggregate(Sum('total_hours'))
@@ -39,6 +40,7 @@ def overall_hours(email):
 		
 	return overall_hours
 	
+# just check the last quarterly hours
 def quarterly_hours(email):
 	# cycle through the dates to see where to start and end
 	for i in range(0, len(date_list)):
@@ -60,6 +62,13 @@ def quarterly_hours(email):
 		quarterly_hours = 0
 		
 	return quarterly_hours
+
+# try to snag the last 5 work sessions	
+def last_seven_sessions(email):
+	# snag every possible entry from the Log table and sort them based on clock - out time and get the
+	# first 7
+	last_seven_sessions = Log.objects.filter(volunteer__email = email).order_by('-clock_out')[ : 7]
+	return last_seven_sessions
 
 #this is a registration form
 def regi(request):
@@ -132,7 +141,7 @@ def auth_buff(request):
 			if Log.objects.filter(volunteer__email = volunteer.email, clock_out = None) and vol_bool:
 				return HttpResponseRedirect('/login/clock_out')
 			
-			#staff looking to clock in
+			# staff looking to clock in
 			elif vol_bool:
 				return HttpResponseRedirect('/login/clock_in')
 			
@@ -154,10 +163,16 @@ def auth_buff(request):
 # this is the view that holds the business logic for the clock in and out system
 def clock_in(request):
 	volunteer = request.user
+	
+	# if they tried to access this page without loggin in first - redirect them to the login page
+	if volunteer.is_anonymous():
+		return HttpResponseRedirect('/login/')
+			
+	# Otherwise, snag all of the times when this volunteer logged in overall and quarterly		
 	user = volunteer.email
-	# snag all of the times when this volunteer logged in overall and quarterly
 	total_hours = overall_hours(volunteer.email)
 	quart_hours = quarterly_hours(volunteer.email)
+	last_seven = last_seven_sessions(volunteer.email)
 	
 	# if the volunteer is staff
 	vol_bool = volunteer.is_staff
@@ -166,8 +181,11 @@ def clock_in(request):
 	if Log.objects.filter(volunteer__email = volunteer.email, clock_out = None) and vol_bool:
 		return HttpResponseRedirect('/login/clock_out')
 	else:
-		return render(request, 'loginPortal/clock_in.html', {'user' : user, 'overall_hours' : total_hours, 'quarterly_hours' : quart_hours})
-
+		return render(request, 'loginPortal/clock_in.html', {	'user' : user, 
+																'overall_hours' : total_hours, 
+																'quarterly_hours' : quart_hours,
+																'last_seven': last_seven })
+	
 # writes to the database after a user has clocked in 
 def log_buff(request):
 	volunteer = request.user
@@ -181,10 +199,16 @@ def log_buff(request):
 def clock_out(request):
 	# should just load that clock-out page, when you hit clock-in
 	volunteer = request.user
+	
+	# if they tried to access this page without loggin in first - redirect them to the login page
+	if volunteer.is_anonymous():
+		return HttpResponseRedirect('/login/')
+	
+	# Otherwise, snag all of the times when this volunteer logged in overall and quarterly		
 	user = volunteer.email
-	# snag all of the times when this volunteer logged in overall and quarterly
 	total_hours = overall_hours(volunteer.email)
 	quart_hours = quarterly_hours(volunteer.email)
+	last_seven = last_seven_sessions(volunteer.email)
 	
 	# if the volunteer is staff
 	vol_bool = volunteer.is_staff
@@ -193,11 +217,15 @@ def clock_out(request):
 	if not Log.objects.filter(volunteer__email = volunteer.email, clock_out = None) and vol_bool:
 		return HttpResponseRedirect('/login/clock_in')
 	else:
-		return render(request, 'loginPortal/clock_out.html', {'user' : user, 'overall_hours' : total_hours, 'quarterly_hours' : quart_hours})
-
+		return render(request, 'loginPortal/clock_out.html',{'user' : user, 
+																'overall_hours' : total_hours, 
+																'quarterly_hours' : quart_hours,
+																'last_seven' : last_seven })
+		
 # this is the buffer that helps users clock out	
 def out_buff(request):
 	volunteer = request.user
+	
 	# now we will do some fancy conversion to change days and seconds into hours
 	now = timezone.now()
 	L = Log.objects.get(volunteer__email = volunteer.email, clock_out = None)
@@ -212,13 +240,26 @@ def out_buff(request):
 
 # here are the functions that will deal with the time stamp 
 def time_stamp(request):
+	# get the volunteer info
 	volunteer = request.user
+	
+	# if they tried to access this page without loggin in first - redirect them to the login page
+	if volunteer.is_anonymous():
+		return HttpResponseRedirect('/login/')
+	
 	user = volunteer.email
+	# find their total hours
+	user = volunteer.email
+	total_hours = overall_hours(volunteer.email)
+	quart_hours = quarterly_hours(volunteer.email)
+	last_seven = last_seven_sessions(volunteer.email)
 	welcome = "Hello %s, you are at the time stamp portal" % volunteer.email
-	return render(request, 'loginPortal/time_stamp.html', {'user' : user})
+	return render(request, 'loginPortal/time_stamp.html', { 'user' : user,
+																'last_seven' : last_seven })
 	
 # this is a tiny dictionary that holds all of the work types
 def time_stamp_buff(request):
+	# get some information off of the page
 	volunteer = request.user
 	work_type = request.POST['work_type']
 	total_hours = request.POST['total_hours']
@@ -244,8 +285,10 @@ def new_password_buff(request):
 	volunteer = Volunteer.objects.get(email = email)
 	
 	if volunteer:
-		volunteer.email_user("Does this work?", "Plz respond", "jdsprink@umail.iu.edu")
-		return HttpResponse("Email sent!!!")
+		if volunteer.email_user("Does this work?", "Plz respond", "jdsprink@umail.iu.edu") :
+			return HttpResponse("Email sent!!!")
+		else: 
+			return HttpResponse("GET BACK TO WORK")
 	else:
 		return HttpResponse("Enter a valid password")
 	

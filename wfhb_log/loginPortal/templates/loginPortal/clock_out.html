@@ -33,20 +33,20 @@ mydiv.style.display = 'block'
 	
 {% block buttons %}
 <form action="/login/out/" method="POST" enctype="multipart/form-data" >{% csrf_token %}
-	<center><input type="submit" id="submitbutton" value="CLOCK-OUT" onclick="toggle();">
-</form>
-<br />
-             
-        			<a id="submitbutton" href="missedpunch.html">
-        			MISSED PUNCH
-					</a>
+	<center><input type="submit" id="submitbutton" value="CLOCK-OUT" onclick="toggle();">             
+	<a id="submitbutton" href="missedpunch.html">MISSED PUNCH</a>
 					
-					<div id="hourinfo">
+					<!--<div id="hourinfo">
 					<dl>
 					<dd>
 					Date ___ Hours ___
 					</dd>
 					</dl>
-					</div>
+					</div>-->
+</form>
+<br />
+ {% for session in last_seven %}
+ 	<p class="log"> {{ session }} </p>
+ {% endfor %}
 					
 {% endblock %}	

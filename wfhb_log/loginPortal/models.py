@@ -113,7 +113,7 @@ class Volunteer(AbstractBaseUser, PermissionsMixin):
 		return self.email
 		
 	def email_user(self, subject, message, from_email=None):
-		send_mail(subject, message, from_email, [self.email])
+		return send_mail(subject, message, from_email, [self.email])
 	
 	def __unicode__(self):
 		return self.email
@@ -136,16 +136,8 @@ class Log(models.Model):
 	total_hours = models.FloatField(default=0)
 	work_type = models.CharField(max_length=1, choices=WORK_CHOICES)
 	
-	def set_total_hours(self):
-		if self.clock_out:
-			diff = self.clock_out - self.clock_in
-			minutes = diff.days * 1440 + diff.seconds // 60
-			self.total_hours = float(minutes) / 60
-		else:
-			print "can't do that yet - you need to clock out"
-	
 	def __unicode__(self):
-		return "clock-in: " + str(self.clock_in) + " clock-out: " + str(self.clock_out)
+		return "clock-in: " + str(self.clock_in)[ :16] + " clock-out: " + str(self.clock_out)[ :16] + " total hours: " + str(round(self.total_hours,2))
 
 class RegiForm(forms.Form):
 	email = forms.EmailField(max_length=75)
