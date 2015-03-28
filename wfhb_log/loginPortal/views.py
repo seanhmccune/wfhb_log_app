@@ -91,12 +91,11 @@ def regi(request):
 			password = form.cleaned_data['password']
 			Volunteer.objects.create_user(email, first_name, last_name, address, phone_number, date_of_birth, contact_first_name, contact_last_name, contact_phone_number, relation_to_contact, password)
   
-			return HttpResponse('/Thanks/')
+			return HttpResponseRedirect('/login/')
 	else:
 		form = RegiForm()
 	return render(request, 'loginPortal/regiform.html', {'form' : form})
 		  
-
 # this is a buffer view that will eventually become the authentication portal
 def my_login(request, flag = "0"):
 	# we will be writing a message to the screen depending on what needs to be displayed
@@ -254,7 +253,9 @@ def time_stamp(request):
 	quart_hours = quarterly_hours(volunteer.email)
 	last_seven = last_seven_sessions(volunteer.email)
 	welcome = "Hello %s, you are at the time stamp portal" % volunteer.email
-	return render(request, 'loginPortal/time_stamp.html', { 'user' : user,
+	return render(request, 'loginPortal/time_stamp.html', {	'user' : user, 
+																'overall_hours' : total_hours, 
+																'quarterly_hours' : quart_hours,
 																'last_seven' : last_seven })
 	
 # this is a tiny dictionary that holds all of the work types
