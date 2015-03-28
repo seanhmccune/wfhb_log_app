@@ -89,9 +89,23 @@ def regi(request):
 		  
 
 # this is a buffer view that will eventually become the authentication portal
-def my_login(request):
-	# just go to this page - it will go to an authentications view when submit is pressed
-	return render(request, 'loginPortal/login.html', {})
+def my_login(request, flag = "0"):
+	# we will be writing a message to the screen depending on what needs to be displayed
+	message = ''
+	
+	#if a user is not active
+	if flag == "1":
+		message = 'You are not yet active in the WFHB database'
+	
+	# if the user entered a valid email, but a bad password
+	elif flag == "2":
+		message = 'You entered a valid email address, but the password was incorrect. Please try again!'
+	
+	# if we cannot recognize the email	
+	elif flag == "3":
+		message = 'We do not recognize that email address. Please enter a valid email address'
+		
+	return render(request, 'loginPortal/login.html', { 'message' : message })
 
 # log a user out and return back to the login page
 def my_logout(request):
@@ -104,7 +118,10 @@ def auth_buff(request):
 	password = request.POST['password']
 	volunteer = authenticate(email=email, password=password)
 	
+	# if the volunteer is in the database
 	if volunteer:
+		
+		#if the volunteer is active 
 		if volunteer.is_active:
 			login(request, volunteer)
 
@@ -122,12 +139,18 @@ def auth_buff(request):
 			# time stamp
 			else:
 				return HttpResponseRedirect('/login/time_stamp')
-		
+		# if the volunteer is not active
 		else:
-			return HttpResponse("You'ze ain't active yets")
+			return HttpResponseRedirect('/login/%s' % '1')
+	
+	# if the entered a valid email, but the password was bad 
+	elif Volunteer.objects.filter(email = email):
+		return HttpResponseRedirect('/login/%s' % '2')
+	
+	# if we can't recognize the email
 	else:
-		return HttpResponse("bad email and password")
-
+		return HttpResponseRedirect('/login/%s' % '3')	
+		
 # this is the view that holds the business logic for the clock in and out system
 def clock_in(request):
 	volunteer = request.user
