@@ -8,8 +8,15 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__)) + os.sep
 # this will change the authentication user model to the one that we have defined
 AUTH_USER_MODEL = 'loginPortal.Volunteer'
 
-# this will change the email backend to we can send emails
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# These are the setting that will allow us to send email via gmail
+# WE WILL NEED TO CHANGE THIS WHEN APPLYING THIS TO WFHB
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+
+# change this for WFHB!!!!!!!
+EMAIL_HOST_USER = 'wfhbDevTeam@gmail.com'
+EMAIL_HOST_PASSWORD = 'Patience158'
+EMAIL_PORT = 587
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG

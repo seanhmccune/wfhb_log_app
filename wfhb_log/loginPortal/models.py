@@ -6,6 +6,9 @@ from django.core.validators import RegexValidator
 from django.core.mail import send_mail
 from django import forms
 
+# this is the email that we will use to send emails
+EMAIL_HOST_USER = 'wfhbDevTeam@gmail.com'
+
 # Create your models here.
 
 # this class helps us create new Volunteers and 'superusers' that is, people who have
@@ -112,8 +115,8 @@ class Volunteer(AbstractBaseUser, PermissionsMixin):
 	def get_short_name(self):
 		return self.email
 		
-	def email_user(self, subject, message, from_email=None):
-		return send_mail(subject, message, from_email, [self.email])
+	def email_user(self, subject, message):
+		return send_mail(subject, message, EMAIL_HOST_USER, [self.email])
 	
 	def __unicode__(self):
 		return self.email

@@ -286,8 +286,8 @@ def new_password_buff(request):
 	volunteer = Volunteer.objects.get(email = email)
 	
 	if volunteer:
-		if volunteer.email_user("Does this work?", "Plz respond", "jdsprink@umail.iu.edu") :
-			return HttpResponse("Email sent!!!")
+		if volunteer.email_user("Does this work?", "Plz respond"):
+			return 
 		else: 
 			return HttpResponse("GET BACK TO WORK")
 	else:
