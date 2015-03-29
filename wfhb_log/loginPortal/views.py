@@ -287,7 +287,7 @@ def new_password_buff(request):
 	
 	if volunteer:
 		if volunteer.email_user("Does this work?", "Plz respond"):
-			return 
+			return HttpRequestRedirect('/login/')
 		else: 
 			return HttpResponse("GET BACK TO WORK")
 	else:
