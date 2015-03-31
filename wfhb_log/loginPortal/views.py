@@ -3,11 +3,12 @@ from django.utils import timezone
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout, get_user_model
-from loginPortal.models import Volunteer, Log , RegiForm, VolunteerManager
+from loginPortal.models import Volunteer, Log , RegiForm, VolunteerManager, Code
 from django.views.generic.edit import CreateView
 from django.utils import timezone
 from django.db.models import Sum
 from datetime import datetime, timedelta, date
+import random, string
 
 user = get_user_model()
 
@@ -70,6 +71,17 @@ def last_seven_sessions(email):
 	last_seven_sessions = Log.objects.filter(volunteer__email = email).order_by('-clock_out')[ : 7]
 	return last_seven_sessions
 
+'''
+So here's the steps we should take to be able to change your password
+1) enter in an email address
+2) check if that email address is in our system. If so, send them an email with a code and link to the generate new password page
+(see step three for a continuation). If not, tell them we don't recognize that email and tell them to try again.
+3) Take the code and put that in a list with their email. So now we have a set of tuples (code, email) in a database, where you can only 
+reset your password with the appropraite code
+4) Make them log in with their code and email
+5) reset their password, then wipe that table from the database 
+'''
+
 #this is a registration form
 def regi(request):
 	if request.method == 'POST':
@@ -112,7 +124,23 @@ def my_login(request, flag = "0"):
 	# if we cannot recognize the email	
 	elif flag == "3":
 		message = 'We do not recognize that email address. Please enter a valid email address'
+	
+	# if we have successfully sent them an email for reseting their password	
+	elif flag == "4":
+		message = "We have just sent you an email with some information about reseting your password"
 		
+	# if we couldn't send them an email	
+	elif flag == "5":
+		message = "We had trouble sending you an email - Please try again"
+		
+	# if we have successfully reset their password	
+	elif flag == "6":
+		message = "Your password has successfully been reset"
+	
+	# if we already have a password reset for the user	
+	elif flag == "7":
+		message = "We already have a password reset code in the database"
+			
 	return render(request, 'loginPortal/login.html', { 'message' : message })
 
 # log a user out and return back to the login page
@@ -284,12 +312,49 @@ def new_password_buff(request):
 	
 	# if they are in the database, then send them an email
 	volunteer = Volunteer.objects.get(email = email)
-	
+
 	if volunteer:
-		if volunteer.email_user("Does this work?", "Plz respond"):
-			return HttpRequestRedirect('/login/')
+		# generate a random string of 20 digits / uppercase letters - save it to the code table
+		code = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(20))
+		if Code.objects.get(volunteer__email = email, code = code):
+			return HttpResponseRedirect('/login/%s' % "7")
+		C = volunteer.code_set.create(code = code)
+		C.save()
+		EMAIL_CONTENT = 'To change your password, please put this link in your url: (we will figure out a link later - for now, just go to your 127.0.0.1:8000/login/setpassword). '
+		EMAIL_CONTENT += 'Once you are there please enter in your email and this code: '
+		EMAIL_CONTENT += code
+		
+		# try to send them an email
+		if volunteer.email_user("Password reset", EMAIL_CONTENT):
+			return HttpResponseRedirect('/login/%s' % "4")
 		else: 
-			return HttpResponse("GET BACK TO WORK")
-	else:
-		return HttpResponse("Enter a valid password")
+			return HttpResponseRedirect('/login/%s' % "5")
 	
+	# if we don't recognize their email address
+	else:
+		return HttpResponseRedirect('/login/%s' % "3")
+
+# just return the page prompting the user to enter an email and the code that was emailed to them		
+def set_password(request):
+	return render(request, 'loginPortal/set_password.html', {})
+	
+def set_password_buff(request):
+	# snag these values from the form on the previous page
+	email = request.POST['email']
+	code = request.POST['code']
+	password = request.POST['password']
+	
+	# check to see if they are a volunteer and if they are in the code database
+	code_bool = Code.objects.get(volunteer__email = email, code = code)
+	volunteer = Volunteer.objects.get(email__exact = email)
+
+	# if there is a code in the database
+	if code_bool:
+		# reset their password, save the change, then remove that line from the database
+		volunteer.set_password(password)
+		volunteer.save()
+		code_bool.delete()
+		return HttpResponseRedirect('/login/%s' % "6")
+	else:
+		return HttpResponseRedirect('/login/%s' % "2")
+

@@ -142,6 +142,14 @@ class Log(models.Model):
 	def __unicode__(self):
 		return "clock-in: " + str(self.clock_in)[ :16] + " clock-out: " + str(self.clock_out)[ :16] + " total hours: " + str(round(self.total_hours,2))
 
+# This is a database table that will hold a temporary code and volunteer. This will ensure that only a user with the right code can change their password
+class Code(models.Model):
+	volunteer = models.ForeignKey(Volunteer)
+	code = models.CharField(max_length = 20)
+	
+	def __unicode__(self):
+		return "email " + str(self.volunteer__email) + " code: " + str(self.code)
+
 class RegiForm(forms.Form):
 	email = forms.EmailField(max_length=75)
 	first_name = forms.CharField(max_length=25)
