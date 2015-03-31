@@ -316,7 +316,7 @@ def new_password_buff(request):
 	if volunteer:
 		# generate a random string of 20 digits / uppercase letters - save it to the code table
 		code = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(20))
-		if Code.objects.get(volunteer__email = email, code = code):
+		if Code.objects.filter(volunteer__email = email):
 			return HttpResponseRedirect('/login/%s' % "7")
 		C = volunteer.code_set.create(code = code)
 		C.save()
@@ -345,7 +345,7 @@ def set_password_buff(request):
 	password = request.POST['password']
 	
 	# check to see if they are a volunteer and if they are in the code database
-	code_bool = Code.objects.get(volunteer__email = email, code = code)
+	code_bool = Code.objects.filter(volunteer__email = email, code = code)
 	volunteer = Volunteer.objects.get(email__exact = email)
 
 	# if there is a code in the database
@@ -353,6 +353,7 @@ def set_password_buff(request):
 		# reset their password, save the change, then remove that line from the database
 		volunteer.set_password(password)
 		volunteer.save()
+		code_bool = Code.objects.get(volunteer__email = email, code = code)
 		code_bool.delete()
 		return HttpResponseRedirect('/login/%s' % "6")
 	else:
