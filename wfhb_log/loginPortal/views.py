@@ -1,5 +1,4 @@
 # Create your views here.
-from django.utils import timezone
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout, get_user_model
@@ -48,7 +47,7 @@ def quarterly_hours(email):
 		start = date_list[ i ]
 		end = date_list[ i + 1 % 4 ]
 		# if we found the right two times break out of the loop
-		if global_now >= start and global_now <= end:
+		if global_now >= start and global_now < end:
 			# if you are looking at the last quarter, we need to update the end date by 1 year
 			if i == len(date_list):
 				end = end + datetime.timedelta(years = 1)
@@ -70,17 +69,6 @@ def last_seven_sessions(email):
 	# first 7
 	last_seven_sessions = Log.objects.filter(volunteer__email = email).order_by('-clock_out')[ : 7]
 	return last_seven_sessions
-
-'''
-So here's the steps we should take to be able to change your password
-1) enter in an email address
-2) check if that email address is in our system. If so, send them an email with a code and link to the generate new password page
-(see step three for a continuation). If not, tell them we don't recognize that email and tell them to try again.
-3) Take the code and put that in a list with their email. So now we have a set of tuples (code, email) in a database, where you can only 
-reset your password with the appropraite code
-4) Make them log in with their code and email
-5) reset their password, then wipe that table from the database 
-'''
 
 #this is a registration form
 def regi(request):
@@ -216,7 +204,7 @@ def clock_in(request):
 # writes to the database after a user has clocked in 
 def log_buff(request):
 	volunteer = request.user
-	clock_in = timezone.now()
+	clock_in = timezone.now() 
 	work_type = 'a'	
 	L = volunteer.log_set.create(clock_in = clock_in, work_type = work_type)
 	L.save()
@@ -333,6 +321,17 @@ def new_password_buff(request):
 	# if we don't recognize their email address
 	else:
 		return HttpResponseRedirect('/login/%s' % "3")
+
+'''
+So here's the steps we should take to be able to change your password
+1) enter in an email address
+2) check if that email address is in our system. If so, send them an email with a code and link to the generate new password page
+(see step three for a continuation). If not, tell them we don't recognize that email and tell them to try again.
+3) Take the code and put that in a list with their email. So now we have a set of tuples (code, email) in a database, where you can only 
+reset your password with the appropraite code
+4) Make them log in with their code and email
+5) reset their password, then wipe that table from the database 
+'''
 
 # just return the page prompting the user to enter an email and the code that was emailed to them		
 def set_password(request):
