@@ -32,7 +32,10 @@
 </form>
 
  <br />
-             
+ 
+ {% for session in last_seven %}
+ 	<p class="log"> {{ session }} </p>
+ {% endfor %}
 						
 
 {% endblock %}	

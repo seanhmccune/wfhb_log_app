@@ -3,8 +3,9 @@
 
 {% block page %}
 <div id="login">
-
-	LOG IN TO YOUR WFHB ACCOUNT
+	LOG IN TO YOUR WFHB ACCOUNT<br>
+	{{ message }} <br>
+	 <a href='/login/newpassword/'>Change Password</a>
 
 </div>
 {% endblock %}
@@ -38,6 +39,7 @@
 	<br />
 								
 <center><button id="submitbutton" type="submit" value="SUBMIT">LOG IN</button></center>
+<center><a href = '/login/regi/'><button id="submitbutton">Register</button></a>
 
 </form>
 {% endblock %}				

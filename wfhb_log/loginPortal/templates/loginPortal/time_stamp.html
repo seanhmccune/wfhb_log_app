@@ -4,10 +4,10 @@
 
 {% block page %}
 	<span style="float: left; padding: 1%; text-align: left;">
-	Total Hours:
+	Total Hours: {{ overall_hours }}
 	<br />
 	
-	Total Quarterly Hours:
+	Total Quarterly Hours: {{ quarterly_hours }}
 	</span>
 	
 	<span id="logoutbutton">
@@ -17,7 +17,8 @@
 	<br />
 	<span style="float: right; padding-right: 1%;">
 	 WELCOME, {{ user }}
-	</span>
+	</span>	
+	
 	<br /><br />
 {% endblock %}	
 
@@ -45,4 +46,9 @@
 		<span>
 		
 	</form>
+	
+	 {% for session in last_seven %}
+	 	<p class="log"> {{ session }} </p>
+	 {% endfor %}
+	 
 {% endblock %}

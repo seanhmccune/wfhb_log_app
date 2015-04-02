@@ -8,6 +8,16 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__)) + os.sep
 # this will change the authentication user model to the one that we have defined
 AUTH_USER_MODEL = 'loginPortal.Volunteer'
 
+# These are the setting that will allow us to send email via gmail
+# WE WILL NEED TO CHANGE THIS WHEN APPLYING THIS TO WFHB
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+
+# change this for WFHB!!!!!!!
+EMAIL_HOST_USER = 'wfhbDevTeam@gmail.com'
+EMAIL_HOST_PASSWORD = 'Patience158'
+EMAIL_PORT = 587
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -17,7 +27,6 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-import os
 if (os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine') or
 	os.getenv('SETTINGS_MODE') == 'prod'):
 	# Running on production App Engine, so use a Google Cloud SQL database.
@@ -36,11 +45,9 @@ else:
 	DATABASES = {
 		'default': {
 			'ENGINE': 'django.db.backends.mysql',
-			'NAME': 'gittest',
+			'NAME': 'wfhb_log',
 			'USER': 'root',
-			'PASSWORD': '1234',
-			'HOST': '',
-			'PORT': '', 
+			'PASSWORD': 'RingRingRing506',
 		}
 	}
 
@@ -84,7 +91,7 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = ''
+STATIC_ROOT = BASE_DIR + '..' + os.sep + 'static'
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"

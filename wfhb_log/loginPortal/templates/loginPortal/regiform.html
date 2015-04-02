@@ -1,29 +1,21 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>RegistrationForm</title>
+{% extends "loginPortal/base.html" %}
+{% block title %} RegistrationForm {% endblock %}
 
-
-
-</head>
-
-<body>
-
- 
-<h1>Registration Form</h1>
-<img style="position: absolute;
-    top: 0px;
-    right: 0px;" src="/static/loginPortal/images/wfhb.gif" width="10%" height="10%"/>
-<br/> 
-<hr style="border-top: dotted 1px;" />
-
+{% block page %}
+<div id="login">
+	Registration Form
 	
+	<span style="float: right; padding-right: 1%;">
+	<a href="/login/">HOME</a>
+	</span>
+</div>
+{% endblock %}
+
+{% block buttons %}	
 <form action="/login/regi/" method="POST">{% csrf_token %}
 {{ form.as_p }}
 <input type="submit" value="Submit" />
 </form>
 
+{% endblock %}
 
-</body>
-</html>

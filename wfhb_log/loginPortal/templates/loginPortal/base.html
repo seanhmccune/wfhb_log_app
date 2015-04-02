@@ -6,7 +6,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>{% block title %}Untitled Document{% endblock %}</title>
-<link href="{% static 'loginPortal/style.css' %}" rel="stylesheet" type="text/css" />
+<link href="{{ STATIC_URL }}loginPortal/css/style.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
@@ -30,7 +30,7 @@
 		<br />
 	
         
-   				 <img src="/static/loginPortal/images/wfhb.gif" />
+   				 <img src="{{ STATIC_URL }}loginPortal/images/wfhb.gif" />
     
     	</div>
     

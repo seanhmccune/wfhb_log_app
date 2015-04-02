@@ -3,7 +3,11 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.core.validators import RegexValidator
+from django.core.mail import send_mail
 from django import forms
+
+# this is the email that we will use to send emails
+EMAIL_HOST_USER = 'wfhbDevTeam@gmail.com'
 
 # Create your models here.
 
@@ -111,8 +115,8 @@ class Volunteer(AbstractBaseUser, PermissionsMixin):
 	def get_short_name(self):
 		return self.email
 		
-	def email_user(self, subject, message, from_email=None):
-		send_mail(subject, message, from_email, [self.email])
+	def email_user(self, subject, message):
+		return send_mail(subject, message, EMAIL_HOST_USER, [self.email])
 	
 	def __unicode__(self):
 		return self.email
@@ -135,16 +139,16 @@ class Log(models.Model):
 	total_hours = models.FloatField(default=0)
 	work_type = models.CharField(max_length=1, choices=WORK_CHOICES)
 	
-	def set_total_hours(self):
-		if self.clock_out:
-			diff = self.clock_out - self.clock_in
-			minutes = diff.days * 1440 + diff.seconds // 60
-			self.total_hours = float(minutes) / 60
-		else:
-			print "can't do that yet - you need to clock out"
+	def __unicode__(self):
+		return "clock-in: " + str(self.clock_in)[ :16] + " clock-out: " + str(self.clock_out)[ :16] + " total hours: " + str(round(self.total_hours,2))
+
+# This is a database table that will hold a temporary code and volunteer. This will ensure that only a user with the right code can change their password
+class Code(models.Model):
+	volunteer = models.ForeignKey(Volunteer)
+	code = models.CharField(max_length = 20)
 	
 	def __unicode__(self):
-		return "clock-in: " + str(self.clock_in) + " clock-out: " + str(self.clock_out)
+		return "email " + str(self.volunteer__email) + " code: " + str(self.code)
 
 class RegiForm(forms.Form):
 	email = forms.EmailField(max_length=75)
