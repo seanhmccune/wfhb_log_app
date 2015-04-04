@@ -7,6 +7,7 @@ from django.views.generic.edit import CreateView
 from django.utils import timezone
 from django.db.models import Sum
 from datetime import datetime, timedelta, date
+from django.utils.timezone import utc
 import random, string
 
 user = get_user_model()
@@ -329,15 +330,11 @@ def missrequest(request):
 	now = str(int(civilianTime[:2]) + time) + civilianTime[2:]
 	
 	#grabs the date and time strings and converts them to datetime
-	d = datetime.datetime.strptime(date, "%Y-%m-%d").date()
-	t = datetime.datetime.strptime(now, "%H:%M").time()
+	d = datetime.strptime(date, "%Y-%m-%d").date()
+	t = datetime.strptime(now, "%H:%M").time()
 	
 	#combines date and time into datetime field
-	finalTime = datetime.datetime.combine(d, t)
-	
-	#converts timezone to aware
-	from django.utils.timezone import utc
-	finalTime = datetime.datetime.utcnow().replace(tzinfo=utc)
+	finalTime = datetime.combine(d, t).replace(tzinfo=utc)
 	
 	#if the user has selected clock_in do this
 	if request.POST.get('misstable') == 'clock_in':

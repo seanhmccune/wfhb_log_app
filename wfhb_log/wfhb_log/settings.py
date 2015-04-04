@@ -48,9 +48,9 @@ else:
 	DATABASES = {
 		'default': {
 			'ENGINE': 'django.db.backends.mysql',
-			'NAME': 'wfhb_log',
+			'NAME': 'tutorial',
 			'USER': 'root',
-			'PASSWORD': 'RingRingRing506',
+			'PASSWORD': 'apwinzanguitar86',
 		}
 	}
 
