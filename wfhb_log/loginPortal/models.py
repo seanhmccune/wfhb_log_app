@@ -148,7 +148,7 @@ class Code(models.Model):
 	code = models.CharField(max_length = 20)
 	
 	def __unicode__(self):
-		return "email " + str(self.volunteer__email) + " code: " + str(self.code)
+		return "email " + str(self.volunteer.email) + " code: " + str(self.code)
 
 class RegiForm(forms.Form):
 	email = forms.EmailField(max_length=75)

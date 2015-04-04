@@ -18,6 +18,9 @@ EMAIL_HOST_USER = 'wfhbDevTeam@gmail.com'
 EMAIL_HOST_PASSWORD = 'Patience158'
 EMAIL_PORT = 587
 
+DEFAULT_FROM_EMAIL = 'wfhbDevTeam@gmail.com'
+SERVER_EMAIL = 'wfhbDevTeam@gmail.com'
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 

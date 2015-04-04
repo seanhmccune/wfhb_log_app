@@ -142,6 +142,9 @@ def auth_buff(request):
 	password = request.POST['password']
 	volunteer = authenticate(email=email, password=password)
 	
+	# this will be the default message
+	message = ''
+		
 	# if the volunteer is in the database
 	if volunteer:
 		
@@ -306,14 +309,14 @@ def new_password_buff(request):
 		code = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(20))
 		if Code.objects.filter(volunteer__email = email):
 			return HttpResponseRedirect('/login/%s' % "7")
-		C = volunteer.code_set.create(code = code)
-		C.save()
-		EMAIL_CONTENT = 'To change your password, please put this link in your url: (we will figure out a link later - for now, just go to your 127.0.0.1:8000/login/setpassword). '
-		EMAIL_CONTENT += 'Once you are there please enter in your email and this code: '
-		EMAIL_CONTENT += code
+		EMAIL_CONTENT = """To change your password, please put this link in your url: (we will figure out a link later - for now, just go to your 127.0.0.1:8000/login/setpassword)."""
+		EMAIL_CONTENT += """Once you are there please enter in your email and this code: """
+		EMAIL_CONTENT += """ """ + code + """ """
 		
 		# try to send them an email
 		if volunteer.email_user("Password reset", EMAIL_CONTENT):
+			C = volunteer.code_set.create(code = code)
+			C.save()
 			return HttpResponseRedirect('/login/%s' % "4")
 		else: 
 			return HttpResponseRedirect('/login/%s' % "5")

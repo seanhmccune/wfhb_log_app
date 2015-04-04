@@ -8,6 +8,9 @@ libraries:
 - name: django
   version: "1.5"
   
+- name: ssl
+  version: latest
+  
 builtins:
 - django_wsgi: on
   
