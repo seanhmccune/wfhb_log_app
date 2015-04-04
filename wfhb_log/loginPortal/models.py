@@ -5,6 +5,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 from django.core.validators import RegexValidator
 from django.core.mail import send_mail
 from django import forms
+from functools import partial
 
 # this is the email that we will use to send emails
 EMAIL_HOST_USER = 'wfhbDevTeam@gmail.com'
@@ -150,19 +151,29 @@ class Code(models.Model):
 	def __unicode__(self):
 		return "email " + str(self.volunteer.email) + " code: " + str(self.code)
 
+cDateInput = partial(forms.DateInput, {'class': 'datepicker'})
 class RegiForm(forms.Form):
+	
+	DateInput = partial(forms.DateInput, {'class': 'datepicker'})
 	email = forms.EmailField(max_length=75)
 	first_name = forms.CharField(max_length=25)
 	last_name = forms.CharField(max_length=25)
 	address = forms.CharField(max_length=200)
 	phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
 	phone_number = forms.CharField(validators=[phone_regex], max_length=15)
-	date_of_birth = forms.DateField()
-	start_date = forms.DateField()
+	date_of_birth = forms.DateField(widget=DateInput())
+	start_date = forms.DateField(widget=DateInput())
 	contact_first_name = forms.CharField(max_length=25)
 	contact_last_name = forms.CharField(max_length=25)
 	contact_phone_number = forms.CharField(validators=[phone_regex], max_length=15)
 	relation_to_contact = forms.CharField(max_length=200)
-	password = forms.CharField(max_length=25)
-	 
-			
+	password = forms.CharField(label=_("Password"), widget=forms.PasswordInput)
+    	password2 = forms.CharField(label=_("Password (again)"), widget=forms.PasswordInput) 
+	#password confirmation   	
+    	def clean_password2(self):
+        	password = self.cleaned_data.get('password')
+        	password2 = self.cleaned_data.get('password2')
+        	if password and password2:
+            		if password != password2:
+                		raise forms.ValidationError(_("The two password fields didn't match."))
+        		return password
