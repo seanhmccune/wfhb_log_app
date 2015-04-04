@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from loginPortal.models import Volunteer, Log , RegiForm, VolunteerManager, Code
 from django.views.generic.edit import CreateView
+from django.contrib.sessions.models import Session
 from django.utils import timezone
 from django.db.models import Sum
 from datetime import datetime, timedelta, date
@@ -28,6 +29,21 @@ date_list = [
 	date(global_year, 7, 1), 
 	date(global_year, 10, 1)
 ]
+
+# http://stackoverflow.com/questions/2723052/how-to-get-the-list-of-the-authenticated-users
+def get_all_logged_in_users():
+	# Query all non-expired sessions
+	sessions = Session.objects.filter(expire_date__gte=datetime.now())
+	uid_list = []
+
+	# Build a list of user ids from that query
+	for session in sessions:
+		data = session.get_decoded()
+		uid_list.append(data.get('_auth_user_id', None))
+
+	# Query all logged in users based on id list
+	print Volunteer.objects.filter(id__in=uid_list)
+	return Volunteer.objects.filter(id__in=uid_list)
 
 # see how many hours someone worked since they've started
 def overall_hours(email):
@@ -98,38 +114,11 @@ def regi(request):
 	return render(request, 'loginPortal/regiform.html', {'form' : form})
 		  
 # this is a buffer view that will eventually become the authentication portal
+
+# we will be writing a message to the screen depending on what needs to be displayed
+message = ''
 def my_login(request, flag = "0"):
-	# we will be writing a message to the screen depending on what needs to be displayed
-	message = ''
-	
-	#if a user is not active
-	if flag == "1":
-		message = 'You are not yet active in the WFHB database'
-	
-	# if the user entered a valid email, but a bad password
-	elif flag == "2":
-		message = 'You entered a valid email address, but the password was incorrect. Please try again!'
-	
-	# if we cannot recognize the email	
-	elif flag == "3":
-		message = 'We do not recognize that email address. Please enter a valid email address'
-	
-	# if we have successfully sent them an email for reseting their password	
-	elif flag == "4":
-		message = "We have just sent you an email with some information about reseting your password"
-		
-	# if we couldn't send them an email	
-	elif flag == "5":
-		message = "We had trouble sending you an email - Please try again"
-		
-	# if we have successfully reset their password	
-	elif flag == "6":
-		message = "Your password has successfully been reset"
-	
-	# if we already have a password reset for the user	
-	elif flag == "7":
-		message = "We already have a password reset code in the database"
-			
+	global message
 	return render(request, 'loginPortal/login.html', { 'message' : message })
 
 # log a user out and return back to the login page
@@ -144,40 +133,55 @@ def auth_buff(request):
 	volunteer = authenticate(email=email, password=password)
 	
 	# this will be the default message
-	message = ''
-		
+	global message
+	
 	# if the volunteer is in the database
 	if volunteer:
+
+		# check if they have logged into a previous session
+		users_bool = volunteer in get_all_logged_in_users()
 		
+		# if someone is already logged ino a different session
+		if users_bool:
+			message = 'You are already logged in elsewhere'
+		
+		# if someone is already logged in
+		elif request.user.is_authenticated():
+			volunteer = request.user
+
 		#if the volunteer is active 
-		if volunteer.is_active:
+		elif volunteer.is_active:
 			login(request, volunteer)
 
-			# if the volunteer is staff
-			vol_bool = volunteer.is_staff
-			
-			# if they haven't clocked out and are staff
-			if Log.objects.filter(volunteer__email = volunteer.email, clock_out = None) and vol_bool:
-				return HttpResponseRedirect('/login/clock_out')
-			
-			# staff looking to clock in
-			elif vol_bool:
-				return HttpResponseRedirect('/login/clock_in')
-			
-			# time stamp
-			else:
-				return HttpResponseRedirect('/login/time_stamp')
-		# if the volunteer is not active
+		# if the volunteer is staff
+		vol_bool = volunteer.is_staff
+
+		# clear the global variable
+		message = ''
+
+		# if they haven't clocked out and are staff
+		if Log.objects.filter(volunteer__email = volunteer.email, clock_out = None) and vol_bool:
+			return HttpResponseRedirect('/login/clock_out')
+
+		# staff looking to clock in
+		elif vol_bool:
+			return HttpResponseRedirect('/login/clock_in')
+
+		# time stamp
 		else:
-			return HttpResponseRedirect('/login/%s' % '1')
-	
+			return HttpResponseRedirect('/login/time_stamp')
+		else:
+			message = 'You are not yet active in the WFHB database' 
+
 	# if the entered a valid email, but the password was bad 
 	elif Volunteer.objects.filter(email = email):
-		return HttpResponseRedirect('/login/%s' % '2')
-	
+		message = 'You entered a valid email address, but the password was incorrect. Please try again!'
+		
 	# if we can't recognize the email
 	else:
-		return HttpResponseRedirect('/login/%s' % '3')	
+		message = 'We do not recognize that email address. Please enter a valid email address'
+	
+	return HttpResponseRedirect('/login/')
 		
 # this is the view that holds the business logic for the clock in and out system
 def clock_in(request):
@@ -258,6 +262,7 @@ def out_buff(request):
 	return HttpResponseRedirect('/login/clock_in')
 
 # here are the functions that will deal with the time stamp 
+time_error = ''
 def time_stamp(request):
 	# get the volunteer info
 	volunteer = request.user
@@ -273,10 +278,12 @@ def time_stamp(request):
 	quart_hours = quarterly_hours(volunteer.email)
 	last_seven = last_seven_sessions(volunteer.email)
 	welcome = "Hello %s, you are at the time stamp portal" % volunteer.email
+	global time_error
 	return render(request, 'loginPortal/time_stamp.html', {	'user' : user, 
 																'overall_hours' : total_hours, 
 																'quarterly_hours' : quart_hours,
-																'last_seven' : last_seven })
+																'last_seven' : last_seven,
+																'time_error' : time_error })
 	
 # this is a tiny dictionary that holds all of the work types
 def time_stamp_buff(request):
@@ -285,8 +292,28 @@ def time_stamp_buff(request):
 	work_type = request.POST['work_type']
 	total_hours = request.POST['total_hours']
 	date = request.POST['date']
-	new_time = volunteer.log_set.create(clock_in = date, clock_out = date, total_hours = total_hours, work_type = work_types[work_type])
-	new_time.save()
+	
+	# change the unicode date to a date
+	d = datetime.strptime(date, "%Y-%m-%d").date()
+	
+	# snag today's date
+	global global_now
+	global time_error
+	
+	# do some error checks
+	if d > global_now:
+		time_error = "You cannot enter in a date that has not happened yet"
+	elif d.year < 2015:
+		time_error = "You cannot enter in a date before 2015"
+	elif not isinstance(total_hours, float):
+		time_error = "You must enter in a valid number for the total hours section"
+	elif total_hours > 24:
+		time_error = "You cannot volunteer more than 24 hours"
+	else:
+		time_error = ''
+		new_time = volunteer.log_set.create(clock_in = date, clock_out = date, total_hours = total_hours, work_type = work_types[work_type])
+		new_time.save()
+
 	return HttpResponseRedirect('/login/time_stamp')
 	
 def missedpunch(request):
@@ -340,7 +367,7 @@ def missrequest(request):
 	if request.POST.get('misstable') == 'clock_in':
 		L = volunteer.log_set.create(clock_in = finalTime, work_type = work_type)
 		L.save()
-		return HttpResponseRedirect('/login/missedpunch')
+
 	#if the user has selected clock_out do this	
 	else:
 		L = Log.objects.get(volunteer__email = volunteer.email, clock_out = None)
@@ -350,7 +377,8 @@ def missrequest(request):
 		L.total_hours = hours
 		# save that stuff
 		L.save()
-		return HttpResponseRedirect('/login/missedpunch')
+	
+	return HttpResponseRedirect('/login/missedpunch')
 		
 # this is a buffer that will be used to send an email to a user when they want a new password
 def new_password(request):
@@ -367,22 +395,29 @@ def new_password_buff(request):
 		# generate a random string of 20 digits / uppercase letters - save it to the code table
 		code = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(20))
 		if Code.objects.filter(volunteer__email = email):
-			return HttpResponseRedirect('/login/%s' % "7")
-		EMAIL_CONTENT = """To change your password, please put this link in your url: (we will figure out a link later - for now, just go to your 127.0.0.1:8000/login/setpassword)."""
-		EMAIL_CONTENT += """Once you are there please enter in your email and this code: """
-		EMAIL_CONTENT += """ """ + code + """ """
+			global message
+			message = "We already have a password reset code in the database"
+		else:	
+			EMAIL_CONTENT = 'To change your password, please put this link in your url: (we will figure out a link later - for now, just go to your 127.0.0.1:8000/login/setpassword).'
+			EMAIL_CONTENT += 'Once you are there please enter in your email and this code: '
+			EMAIL_CONTENT += code
 		
-		# try to send them an email
-		if volunteer.email_user("Password reset", EMAIL_CONTENT):
-			C = volunteer.code_set.create(code = code)
-			C.save()
-			return HttpResponseRedirect('/login/%s' % "4")
-		else: 
-			return HttpResponseRedirect('/login/%s' % "5")
+			# try to send them an email
+			if volunteer.email_user("Password reset", EMAIL_CONTENT):
+				C = volunteer.code_set.create(code = code)
+				C.save()
+				global message
+				message = "We have just sent you an email with some information about reseting your password"
+			else: 
+				global message
+				message = "We had trouble sending you an email - Please try again"
 	
 	# if we don't recognize their email address
 	else:
-		return HttpResponseRedirect('/login/%s' % "3")
+		global message
+		message = 'We do not recognize that email address. Please enter a valid email address'
+
+	return HttpResponseRedirect('/login/')
 
 '''
 So here's the steps we should take to be able to change your password
@@ -416,7 +451,11 @@ def set_password_buff(request):
 		volunteer.save()
 		code_bool = Code.objects.get(volunteer__email = email, code = code)
 		code_bool.delete()
-		return HttpResponseRedirect('/login/%s' % "6")
+		global message
+		message = "Your password has successfully been reset"
 	else:
-		return HttpResponseRedirect('/login/%s' % "2")
+		global message
+		message = 'You entered a valid email address, but the password was incorrect. Please try again!'
+	
+	return HttpResponseRedirect('/login/')
 
