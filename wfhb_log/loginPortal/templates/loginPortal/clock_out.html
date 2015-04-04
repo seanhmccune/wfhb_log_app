@@ -34,7 +34,9 @@ mydiv.style.display = 'block'
 {% block buttons %}
 <form action="/login/out/" method="POST" enctype="multipart/form-data" >{% csrf_token %}
 	<center><input type="submit" id="submitbutton" value="CLOCK-OUT" onclick="toggle();">             
-	<a id="submitbutton" href="missedpunch.html">MISSED PUNCH</a>
+	<a id="submitbutton" href="/login/missedpunch">
+        			MISSED PUNCH
+					</a>
 					
 					<!--<div id="hourinfo">
 					<dl>

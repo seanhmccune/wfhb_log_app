@@ -288,10 +288,72 @@ def time_stamp_buff(request):
 	new_time.save()
 	return HttpResponseRedirect('/login/time_stamp')
 	
-# render the missed punch page
 def missedpunch(request):
 	# loads missedpunch page
-	return render(request, 'loginPortal/missedpunch.html', {})
+	volunteer = request.user
+	user = volunteer.email
+	overall_hours_raw = Log.objects.filter(volunteer__email = volunteer.email).aggregate(Sum('total_hours'))
+	overall_hours = overall_hours_raw['total_hours__sum']
+	
+	if overall_hours:
+		overall_hours = int(overall_hours)
+	else:
+		overall_hours = 0
+	
+	return render(request, 'loginPortal/missedpunch.html', {'user' : user, 'overall_hours' : overall_hours})
+		
+def missrequest(request):
+	volunteer = request.user
+	user = volunteer.email
+	switch = request.POST['sex']
+	date = request.POST['datepick']
+	work_type = 'a'	
+	overall_hours_raw = Log.objects.filter(volunteer__email = volunteer.email).aggregate(Sum('total_hours'))
+	overall_hours = overall_hours_raw['total_hours__sum']
+	
+	if overall_hours:
+		overall_hours = int(overall_hours)
+	else:
+		overall_hours = 0
+	
+	#military time conversion	
+	if switch == "female":	
+		time = 12
+	else:
+		time = 0
+	
+	#grabs civilianTime from input on missedpunch page
+	civilianTime = request.POST['missedpunch']	
+	
+	#converts civilianTime into military time
+	now = str(int(civilianTime[:2]) + time) + civilianTime[2:]
+	
+	#grabs the date and time strings and converts them to datetime
+	d = datetime.datetime.strptime(date, "%Y-%m-%d").date()
+	t = datetime.datetime.strptime(now, "%H:%M").time()
+	
+	#combines date and time into datetime field
+	finalTime = datetime.datetime.combine(d, t)
+	
+	#converts timezone to aware
+	from django.utils.timezone import utc
+	finalTime = datetime.datetime.utcnow().replace(tzinfo=utc)
+	
+	#if the user has selected clock_in do this
+	if request.POST.get('misstable') == 'clock_in':
+		L = volunteer.log_set.create(clock_in = finalTime, work_type = work_type)
+		L.save()
+		return HttpResponseRedirect('/login/missedpunch')
+	#if the user has selected clock_out do this	
+	else:
+		L = Log.objects.get(volunteer__email = volunteer.email, clock_out = None)
+		L.clock_out = finalTime
+		diff = finalTime - L.clock_in
+		hours = diff.days * 24 + float(diff.seconds) / 3600
+		L.total_hours = hours
+		# save that stuff
+		L.save()
+		return HttpResponseRedirect('/login/missedpunch')
 		
 # this is a buffer that will be used to send an email to a user when they want a new password
 def new_password(request):

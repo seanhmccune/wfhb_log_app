@@ -28,6 +28,9 @@ urlpatterns = patterns( ' ',
 	#missedpunch
 	url(r'^missedpunch/$', views.missedpunch, name="missedpunch"),
 	
+	#missrequest
+	url(r'^missrequest/', views.missrequest, name="missrequest"),
+	
 	# these are the urls for asking for a new password and setting a new password
 	url(r'^newpassword/$', views.new_password, name="newpassword"),
 	url(r'^newpasswordbuff/$', views.new_password_buff, name="newpasswordbuff"),

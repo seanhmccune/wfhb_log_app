@@ -3,49 +3,57 @@
 
 
 {% block page %}
-	<span style="float: right">
- 	(Running, current time) WELCOME, user
-	</span>
 
-<br /><br />
+	<span style="float: left; padding: 1%; text-align: left;">
+	Total Hours: {{ overall_hours }}
+	<br />
+	
+	Total Quarterly Hours: {{ quarterly_hours }}
+	</span>
+	
+	<span id="logoutbutton">
+	<a href="/login/logout">LOGOUT</a>
+	</span>
+	
+	<br />
+	<span style="float: right; padding-right: 1%;">
+	 WELCOME, {{ user }}
+	</span>	
+	
+	<br /><br />
+
 {% endblock %}	
 
-	
-{% block buttons %}      				
-	<table class="missedpunch">
+{% block buttons %}	
+
+<form action="/login/missrequest/" method="POST" enctype="multipart/form-data" >{% csrf_token %}
+ 					 	
+ 	<br /><br />
+     				
+    <span style="background-color: #E4E4E4; padding: 2%;">
+    
       				
-    	<form>
-    		<tr>
-				<td>
-       				<input type="radio" name="group1" value="clock-in">
-       			</td>
-        					
-        		<td>
-					<span id="radio-button-text">CLOCK-IN</span>
-    			</td>
-			</tr>
-       					
-       		<tr>
-				<td>
-    				<input type="radio" name="group1" value="clock-out">
-   				</td>
-  							
-  				<td>
-   					<span id="radio-button-text">CLOCK-OUT</span>
-    			</td>
-    		</tr>
-		</form> 
-       
-    </table> 
-       		
-<br />
-        
+    	<select class="dropdownmenu" name="misstable">
+			<option selected style="display: none">Choose One:</option>
+			<option value="clock_in">CLOCK-IN</option>
+			<option value="clock_out">CLOCK-OUT</option>
+		</select>
+        			
+	<br /><br />
+	<input  type="text" name="datepick" placeholder="Date: YYYY-MM-DD" id="d" required/> 
+						
+	<input type="text" name="missedpunch" placeholder="MISSED TIME: 00:00" required>
+								
+	<span style="color: black; font-size: 15px; background-color: none;">
+		<input type="radio" name="sex" value="male">AM
+		<input type="radio" name="sex" value="female">PM
+	</span>
+	
+<center> <input id="submitbutton" value="SUBMIT" type="submit"> </center>
+						
+</form>				
+				
+							
+<br /><br /><br /><br /><br /><br />
 					
-<form action="index.html" required>
-	MISSED TIME:
-	<input type="text" name="missedpunch" required>							
-<br><br />								
-	<center><input id="submitbutton" type="submit" value="SUBMIT"></center>
-</form>
-<p>Click <a href="/login/logout">here</a> to logout<p>
 {% endblock %}	
