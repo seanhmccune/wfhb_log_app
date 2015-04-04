@@ -1,4 +1,5 @@
 # Create your views here.
+from django.template
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout, get_user_model
@@ -119,7 +120,7 @@ def regi(request):
 message = ''
 def my_login(request, flag = "0"):
 	global message
-	return render(request, 'loginPortal/login.html', { 'message' : message })
+	return RequestContext(request, 'loginPortal/login.html', { 'message' : message })
 
 # log a user out and return back to the login page
 def my_logout(request):
@@ -134,6 +135,8 @@ def auth_buff(request):
 	
 	# this will be the default message
 	global message
+	# clear the global variable
+	message = ''
 	
 	# if the volunteer is in the database
 	if volunteer:
@@ -141,39 +144,31 @@ def auth_buff(request):
 		# check if they have logged into a previous session
 		users_bool = volunteer in get_all_logged_in_users()
 		
-		# if someone is already logged ino a different session
-		if users_bool:
-			message = 'You are already logged in elsewhere'
-		
-		# if someone is already logged in
-		elif request.user.is_authenticated():
-			volunteer = request.user
-
-		#if the volunteer is active 
-		elif volunteer.is_active:
-			login(request, volunteer)
-
 		# if the volunteer is staff
 		vol_bool = volunteer.is_staff
+		
+		#if the volunteer is active 
+		if volunteer.is_active and not users_bool and request.user.is_anonymous():
+			login(request, volunteer)
+		
+			# if they haven't clocked out and are staff
+			if Log.objects.filter(volunteer__email = volunteer.email, clock_out = None) and vol_bool:
+				return HttpResponseRedirect('/login/clock_out')
 
-		# clear the global variable
-		message = ''
+			# staff looking to clock in
+			elif vol_bool:
+				return HttpResponseRedirect('/login/clock_in')
 
-		# if they haven't clocked out and are staff
-		if Log.objects.filter(volunteer__email = volunteer.email, clock_out = None) and vol_bool:
-			return HttpResponseRedirect('/login/clock_out')
-
-		# staff looking to clock in
-		elif vol_bool:
-			return HttpResponseRedirect('/login/clock_in')
-
-		# time stamp
+			# time stamp
+			else:
+				return HttpResponseRedirect('/login/time_stamp')
+	
+		# if the volunteer is logged in elsewhere
+		elif users_bool or request.user.is_authenticated():
+			message = 'You are already logged in elsewhere'
 		else:
-			return HttpResponseRedirect('/login/time_stamp')
-		else:
-			message = 'You are not yet active in the WFHB database' 
-
-	# if the entered a valid email, but the password was bad 
+			message = 'You are not active in the wfhb database'
+	
 	elif Volunteer.objects.filter(email = email):
 		message = 'You entered a valid email address, but the password was incorrect. Please try again!'
 		
