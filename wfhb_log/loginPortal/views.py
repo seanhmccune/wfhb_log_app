@@ -1,11 +1,12 @@
 # Create your views here.
-from django.template
+from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from loginPortal.models import Volunteer, Log , RegiForm, VolunteerManager, Code
 from django.views.generic.edit import CreateView
 from django.contrib.sessions.models import Session
+from django.views.decorators.csrf import requires_csrf_token, ensure_csrf_cookie
 from django.utils import timezone
 from django.db.models import Sum
 from datetime import datetime, timedelta, date
@@ -118,9 +119,9 @@ def regi(request):
 
 # we will be writing a message to the screen depending on what needs to be displayed
 message = ''
-def my_login(request, flag = "0"):
+def my_login(request):
 	global message
-	return RequestContext(request, 'loginPortal/login.html', { 'message' : message })
+	return render(request, 'loginPortal/login.html', { 'message' : message })
 
 # log a user out and return back to the login page
 def my_logout(request):
@@ -165,7 +166,7 @@ def auth_buff(request):
 	
 		# if the volunteer is logged in elsewhere
 		elif users_bool or request.user.is_authenticated():
-			message = 'You are already logged in elsewhere'
+			message = 'Someone is already logged in on another tab or window'
 		else:
 			message = 'You are not active in the wfhb database'
 	
@@ -199,14 +200,25 @@ def clock_in(request):
 	if Log.objects.filter(volunteer__email = volunteer.email, clock_out = None) and vol_bool:
 		return HttpResponseRedirect('/login/clock_out')
 	else:
-		return render(request, 'loginPortal/clock_in.html', {	'user' : user, 
-																'overall_hours' : total_hours, 
-																'quarterly_hours' : quart_hours,
-																'last_seven': last_seven })
+		return render( request, 'loginPortal/clock_in.html', 
+										{'user' : user, 
+										  'overall_hours' : total_hours, 
+										  'quarterly_hours' : quart_hours,
+										  'last_seven': last_seven })
 	
 # writes to the database after a user has clocked in 
 def log_buff(request):
 	volunteer = request.user
+	global message
+	
+	# if the volunteer is staff
+	vol_bool = volunteer.is_staff
+	
+	# if they stumbled upon this page and they need to clock out, redirect them to the clock out page
+	if Log.objects.filter(volunteer__email = volunteer.email, clock_out = None) and vol_bool:
+		message = 'You need to clock out before you clock-in'
+		return HttpResponseRedirect('/login/')
+
 	clock_in = timezone.now() 
 	work_type = 'a'	
 	L = volunteer.log_set.create(clock_in = clock_in, work_type = work_type)
@@ -235,15 +247,23 @@ def clock_out(request):
 	if not Log.objects.filter(volunteer__email = volunteer.email, clock_out = None) and vol_bool:
 		return HttpResponseRedirect('/login/clock_in')
 	else:
-		return render(request, 'loginPortal/clock_out.html',{'user' : user, 
-																'overall_hours' : total_hours, 
-																'quarterly_hours' : quart_hours,
-																'last_seven' : last_seven })
-		
+		return render(request, 'loginPortal/clock_out.html', {'user' : user, 
+		 														  	'overall_hours' : total_hours, 
+																  	'quarterly_hours' : quart_hours,
+																  	'last_seven': last_seven})
+			
 # this is the buffer that helps users clock out	
 def out_buff(request):
 	volunteer = request.user
 	
+	# if the volunteer is staff
+	vol_bool = volunteer.is_staff
+	global message
+	# if they stumbled upon this page and they need to clock in, redirect them to the clock in page
+	if not Log.objects.filter(volunteer__email = volunteer.email, clock_out = None) and vol_bool:
+		message = 'You need to clock in before you clock out'
+		return HttpResponseRedirect('/login/')
+
 	# now we will do some fancy conversion to change days and seconds into hours
 	now = timezone.now()
 	L = Log.objects.get(volunteer__email = volunteer.email, clock_out = None)
@@ -274,11 +294,12 @@ def time_stamp(request):
 	last_seven = last_seven_sessions(volunteer.email)
 	welcome = "Hello %s, you are at the time stamp portal" % volunteer.email
 	global time_error
-	return render(request, 'loginPortal/time_stamp.html', {	'user' : user, 
-																'overall_hours' : total_hours, 
-																'quarterly_hours' : quart_hours,
-																'last_seven' : last_seven,
-																'time_error' : time_error })
+	return render(request, 'loginPortal/time_stamp.html', 
+								{	'user' : user, 
+									'overall_hours' : total_hours, 
+									'quarterly_hours' : quart_hours,
+									'last_seven' : last_seven,
+									'time_error' : time_error })
 	
 # this is a tiny dictionary that holds all of the work types
 def time_stamp_buff(request):
@@ -438,6 +459,7 @@ def set_password_buff(request):
 	# check to see if they are a volunteer and if they are in the code database
 	code_bool = Code.objects.filter(volunteer__email = email, code = code)
 	volunteer = Volunteer.objects.get(email__exact = email)
+	global message
 
 	# if there is a code in the database
 	if code_bool:
@@ -449,8 +471,10 @@ def set_password_buff(request):
 		global message
 		message = "Your password has successfully been reset"
 	else:
-		global message
 		message = 'You entered a valid email address, but the password was incorrect. Please try again!'
 	
 	return HttpResponseRedirect('/login/')
 
+# below are some error handlers
+def error403(request):
+	HttpResponse("hello")
