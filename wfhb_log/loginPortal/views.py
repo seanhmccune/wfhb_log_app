@@ -11,6 +11,7 @@ from django.utils import timezone
 from django.db.models import Sum
 from datetime import datetime, timedelta, date
 from django.utils.timezone import utc
+from django.contrib import messages
 import random, string
 
 user = get_user_model()
@@ -32,20 +33,10 @@ date_list = [
 	date(global_year, 10, 1)
 ]
 
-# http://stackoverflow.com/questions/2723052/how-to-get-the-list-of-the-authenticated-users
-def get_all_logged_in_users():
-	# Query all non-expired sessions
-	sessions = Session.objects.filter(expire_date__gte=datetime.now())
-	uid_list = []
-
-	# Build a list of user ids from that query
-	for session in sessions:
-		data = session.get_decoded()
-		uid_list.append(data.get('_auth_user_id', None))
-
-	# Query all logged in users based on id list
-	print Volunteer.objects.filter(id__in=uid_list)
-	return Volunteer.objects.filter(id__in=uid_list)
+# two quick functions that are boolean checks to see if a user 
+# has NONE in the clock out session
+def clock_out_check(volunteer):
+	return Log.objects.filter(volunteer__email = volunteer.email, clock_out = None) and volunteer.is_staff()
 
 # see how many hours someone worked since they've started
 def overall_hours(email):
@@ -118,10 +109,8 @@ def regi(request):
 # this is a buffer view that will eventually become the authentication portal
 
 # we will be writing a message to the screen depending on what needs to be displayed
-message = ''
 def my_login(request):
-	global message
-	return render(request, 'loginPortal/login.html', { 'message' : message })
+	return render(request, 'loginPortal/login.html', { 'messages' : messages })
 
 # log a user out and return back to the login page
 def my_logout(request):
@@ -134,11 +123,6 @@ def auth_buff(request):
 	password = request.POST['password']
 	volunteer = authenticate(email=email, password=password)
 	
-	# this will be the default message
-	global message
-	# clear the global variable
-	message = ''
-	
 	# if the volunteer is in the database
 	if volunteer:
 
@@ -149,11 +133,11 @@ def auth_buff(request):
 		vol_bool = volunteer.is_staff
 		
 		#if the volunteer is active 
-		if volunteer.is_active and not users_bool and request.user.is_anonymous():
+		if volunteer.is_active: 
 			login(request, volunteer)
 		
 			# if they haven't clocked out and are staff
-			if Log.objects.filter(volunteer__email = volunteer.email, clock_out = None) and vol_bool:
+			if clock_out_check(volunteer):
 				return HttpResponseRedirect('/login/clock_out')
 
 			# staff looking to clock in
@@ -165,17 +149,15 @@ def auth_buff(request):
 				return HttpResponseRedirect('/login/time_stamp')
 	
 		# if the volunteer is logged in elsewhere
-		elif users_bool or request.user.is_authenticated():
-			message = 'Someone is already logged in on another tab or window'
 		else:
-			message = 'You are not active in the wfhb database'
+			messages.info(request, 'You are not active in the wfhb database')
 	
 	elif Volunteer.objects.filter(email = email):
-		message = 'You entered a valid email address, but the password was incorrect. Please try again!'
+		messages.info(request, 'You entered a valid email address, but the password was incorrect. Please try again!')
 		
 	# if we can't recognize the email
 	else:
-		message = 'We do not recognize that email address. Please enter a valid email address'
+		messages.info(request, 'We do not recognize that email address. Please enter a valid email address')
 	
 	return HttpResponseRedirect('/login/')
 		
@@ -197,7 +179,7 @@ def clock_in(request):
 	vol_bool = volunteer.is_staff
 	
 	# if they stumbled upon this page and they need to clock out, redirect them to the clock out page
-	if Log.objects.filter(volunteer__email = volunteer.email, clock_out = None) and vol_bool:
+	if clock_out_check(volunteer):
 		return HttpResponseRedirect('/login/clock_out')
 	else:
 		return render( request, 'loginPortal/clock_in.html', 
@@ -215,7 +197,7 @@ def log_buff(request):
 	vol_bool = volunteer.is_staff
 	
 	# if they stumbled upon this page and they need to clock out, redirect them to the clock out page
-	if Log.objects.filter(volunteer__email = volunteer.email, clock_out = None) and vol_bool:
+	if clock_out_check(volunteer):
 		message = 'You need to clock out before you clock-in'
 		return HttpResponseRedirect('/login/')
 
@@ -244,7 +226,7 @@ def clock_out(request):
 	vol_bool = volunteer.is_staff
 	
 	# if they stumbled upon this page and they need to clock in, redirect them to the clock in page
-	if not Log.objects.filter(volunteer__email = volunteer.email, clock_out = None) and vol_bool:
+	if not clock_out_check(volunteer):
 		return HttpResponseRedirect('/login/clock_in')
 	else:
 		return render(request, 'loginPortal/clock_out.html', {'user' : user, 
@@ -260,7 +242,7 @@ def out_buff(request):
 	vol_bool = volunteer.is_staff
 	global message
 	# if they stumbled upon this page and they need to clock in, redirect them to the clock in page
-	if not Log.objects.filter(volunteer__email = volunteer.email, clock_out = None) and vol_bool:
+	if not clock_out_check(volunteer):
 		message = 'You need to clock in before you clock out'
 		return HttpResponseRedirect('/login/')
 
@@ -333,8 +315,13 @@ def time_stamp_buff(request):
 	return HttpResponseRedirect('/login/time_stamp')
 	
 def missedpunch(request):
-	# loads missedpunch page
 	volunteer = request.user
+	
+	# if they tried to access this page without loggin in first - redirect them to the login page
+	if volunteer.is_anonymous():
+		return HttpResponseRedirect('/login/')
+	
+	# loads missedpunch page
 	user = volunteer.email
 	overall_hours_raw = Log.objects.filter(volunteer__email = volunteer.email).aggregate(Sum('total_hours'))
 	overall_hours = overall_hours_raw['total_hours__sum']
@@ -343,7 +330,11 @@ def missedpunch(request):
 		overall_hours = int(overall_hours)
 	else:
 		overall_hours = 0
-	
+	# if they stumbled upon this page and they need to clock out, redirect them to the clock out page
+	if not volunteer.is_staff():
+		message = 'This page is not for you'
+		return HttpResponseRedirect('/login/')
+		
 	return render(request, 'loginPortal/missedpunch.html', {'user' : user, 'overall_hours' : overall_hours})
 		
 def missrequest(request):
