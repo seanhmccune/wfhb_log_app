@@ -4,11 +4,11 @@
 {% block page %}
 <div id="login">
 	LOG IN TO YOUR WFHB ACCOUNT<br>
-	{{ if messages }}
-	{{ for message in messages}}
-	{{ message }} <br>
-	{{ endfor }}
-	{{ endif }}
+	{% if messages %}
+		{% for message in messages %}
+			{{ message }} <br>
+		{% endfor %}
+	{% endif %}
 	 <a href='/login/newpassword/'>Change Password</a>
 
 </div>
