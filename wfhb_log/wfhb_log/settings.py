@@ -128,8 +128,8 @@ TEMPLATE_LOADERS = (
 # added the Model Backend class - which gives us the ability to authenticate users
 MIDDLEWARE_CLASSES = (
 	'django.middleware.common.CommonMiddleware',
-	'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.middleware.csrf.CsrfViewMiddleware',
+	'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
 	'django.contrib.messages.middleware.MessageMiddleware',
 	'django.contrib.auth.backends.ModelBackend',

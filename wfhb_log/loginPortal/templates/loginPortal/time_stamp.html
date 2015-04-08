@@ -8,7 +8,11 @@
 	<br />
 	
 	Total Quarterly Hours: {{ quarterly_hours }}
-	{{ time_error }}
+	{% if messages %}
+		{% for message in messages %}
+			{{ message }} <br>
+		{% endfor %}
+	{% endif %}
 	</span>
 	
 	<span id="logoutbutton">
@@ -35,8 +39,8 @@
 				<option value="Other">Other</option>
 			</select>
 			
-			<input type="text" name="total_hours" placeholder="Hours Volunteered" required>
-			<input type="date" name="date" placeholder="Date Volunteered" required>
+			<input type="text" name="total_hours" placeholder="HOURS: 0.0" required>
+			<input type="date" name="date" placeholder="DATE: YYYY-MM-DD" required>
 		
 		</span>
 		
