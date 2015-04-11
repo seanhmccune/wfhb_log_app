@@ -9,9 +9,10 @@ from django.contrib.sessions.models import Session
 from django.views.decorators.csrf import requires_csrf_token, ensure_csrf_cookie
 from django.utils import timezone
 from django.db.models import Sum
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, date, time
 from django.utils.timezone import utc
 from django.contrib import messages
+from django.conf import settings
 import random, string
 
 # make sure that the user that we will use in the view corresponds to a volunteer
@@ -27,13 +28,39 @@ work_types['Other'] = 'o'
 # two quick functions that are boolean checks to see if a user 
 # has NONE in the clock out session
 def clock_out_check(volunteer):
-	return Log.objects.filter(volunteer__email = volunteer.email, clock_out = None) and volunteer.is_staff()
+	return Log.objects.filter(volunteer__email = volunteer.email, clock_out = None) and volunteer.is_staff
+	
+# this loops through the past logs and determines if a user is trying to clock in or out at a time that they have already worked	
+def new_entry_check(volunteer, date):
+	past_entries = Log.objects.filter(volunteer__email = volunteer.email)
+	
+	# if this is the first time they are loggin in
+	if not past_entries :
+		return True
+		
+	# loop through the entries and see if this user was already working during that time
+	check = True
+	for entry in past_entries:
+		if not entry.clock_in or not entry.clock_out: 
+			break
+		if date >= entry.clock_in and date < entry.clock_out:
+			check = False
+			break
+			
+	return check	
 	
 # http://stackoverflow.com/questions/16870663/how-do-i-validate-a-date-string-format-in-python
 # this checks if an input is a date or not
 def validate_date(date_text):
 	try:
 		return datetime.strptime(date_text, '%Y-%m-%d').date()
+	except ValueError:
+		return False
+
+# if time_text is a valid string it returns a time, otherwise it returns false
+def validate_time(time_text):
+	try:
+		return datetime.strptime(time_text, "%H:%M").time()
 	except ValueError:
 		return False
 
@@ -67,6 +94,7 @@ def quarterly_hours(email):
 		date(global_year, 7, 1), 
 		date(global_year, 10, 1)
 	]
+	
 	# cycle through the dates to see where to start and end
 	for i in range(0, len(date_list)):
 		start = date_list[ i ]
@@ -88,12 +116,19 @@ def quarterly_hours(email):
 		
 	return quarterly_hours
 
-# try to snag the last 5 work sessions	
+# try to snag the last 7 work sessions	
 def last_seven_sessions(email):
 	# snag every possible entry from the Log table and sort them based on clock - out time and get the
 	# first 7
 	last_seven_sessions = Log.objects.filter(volunteer__email = email).order_by('-clock_out')[ : 7]
 	return last_seven_sessions
+
+def last_seven_sessions_dates(email):
+	last_seven = last_seven_sessions(email)
+	dates = []
+	for entry in last_seven:
+		dates.append(entry.clock_in.date())
+	return dates
 
 #this is a registration form
 def regi(request):
@@ -122,9 +157,8 @@ def regi(request):
 	return render(request, 'loginPortal/regiform.html', {'form' : form})
 		  
 # this is a buffer view that will eventually become the authentication portal
-
-# we will be writing a message to the screen depending on what needs to be displayed
 def my_login(request):
+	print settings.TIME_ZONE
 	return render(request, 'loginPortal/login.html', {})
 
 # log a user out and return back to the login page
@@ -133,6 +167,13 @@ def my_logout(request):
 	return HttpResponseRedirect('/login/')
 
 # this is our authentication buffer, it takes the post from the login page and then just goes to work
+# NEED TO CHECK
+# if a user is not active - CHECK
+# if a user needs to clock out - CHECK
+# if a user is staff or not - CHECK
+# good email bad password - CHECK
+# bad email - CHECK
+# if a user treis to acces this without logging in
 def auth_buff(request):
 	email = request.POST['email']
 	password = request.POST['password']
@@ -140,8 +181,6 @@ def auth_buff(request):
 	
 	# if the volunteer is in the database
 	if volunteer:
-		# if the volunteer is staff
-		vol_bool = volunteer.is_staff
 		
 		#if the volunteer is active 
 		if volunteer.is_active: 
@@ -152,7 +191,7 @@ def auth_buff(request):
 				return HttpResponseRedirect('/login/clock_out')
 
 			# staff looking to clock in
-			elif vol_bool:
+			elif volunteer.is_staff:
 				return HttpResponseRedirect('/login/clock_in')
 
 			# time stamp
@@ -173,6 +212,8 @@ def auth_buff(request):
 	return HttpResponseRedirect('/login/')
 		
 # this is the view that holds the business logic for the clock in and out system
+# NEED TO CHECK
+# if a user tries to access this page without logging in - CHECK
 def clock_in(request):
 	volunteer = request.user
 	
@@ -190,36 +231,42 @@ def clock_in(request):
 	# if the volunteer is staff
 	vol_bool = volunteer.is_staff
 	
-	# if they stumbled upon this page and they need to clock out, redirect them to the clock out page
-	if clock_out_check(volunteer):
-		return HttpResponseRedirect('/login/clock_out')
-	else:
-		return render( request, 'loginPortal/clock_in.html', 
-										{'user' : user, 
-										  'overall_hours' : total_hours, 
-										  'quarterly_hours' : quart_hours,
-										  'last_seven': last_seven })
-	
+	return render( request, 'loginPortal/clock_in.html', 
+									{'user' : user, 
+									  'overall_hours' : total_hours, 
+									  'quarterly_hours' : quart_hours,
+									  'last_seven': last_seven })
+
 # writes to the database after a user has clocked in 
+# NEED TO CHECK
+# user tries to access this page without logging in - CHECK
+# user needs to clock out and tries to clock in - CHECK
+# write to database - CHECK
 def log_buff(request):
 	volunteer = request.user
-	global message
+	
+	if volunteer.is_anonymous():
+		messages.info(request, 'You have not logged in yet')
+		return HttpResponseRedirect('/login/')
 	
 	# if the volunteer is staff
 	vol_bool = volunteer.is_staff
 	
 	# if they stumbled upon this page and they need to clock out, redirect them to the clock out page
 	if clock_out_check(volunteer):
-		message.info(request, 'You need to clock out before you clock-in')
-		return HttpResponseRedirect('/login/')
+		messages.info(request, 'You need to clock out before you clock-in')
+		return HttpResponseRedirect('/login/logout')
 
-	clock_in = timezone.now() 
+	clock_in = timezone.localtime(timezone.now()) - timedelta(minutes=240)
 	work_type = 'a'	
 	L = volunteer.log_set.create(clock_in = clock_in, work_type = work_type)
 	L.save()
 	return HttpResponseRedirect('/login/clock_out')
 	
 # this is used to clock users out	
+# user tries to access this page without logging in - CHECK
+# user needs to clock out and tries to clock in - CHECK
+# write to database - CHECK
 def clock_out(request):
 	# should just load that clock-out page, when you hit clock-in
 	volunteer = request.user
@@ -238,28 +285,30 @@ def clock_out(request):
 	# if the volunteer is staff
 	vol_bool = volunteer.is_staff
 	
-	# if they stumbled upon this page and they need to clock in, redirect them to the clock in page
-	if not clock_out_check(volunteer):
-		return HttpResponseRedirect('/login/clock_in')
-	else:
-		return render(request, 'loginPortal/clock_out.html', {'user' : user, 
-		 														  	'overall_hours' : total_hours, 
-																  	'quarterly_hours' : quart_hours,
-																  	'last_seven': last_seven})
+	return render(request, 'loginPortal/clock_out.html', {'user' : user, 
+		 													 'overall_hours' : total_hours, 
+														  	 'quarterly_hours' : quart_hours,
+															 'last_seven': last_seven})
 			
-# this is the buffer that helps users clock out	
+# this is the buffer that helps users clock out
+# if a user tries to access this page without logging in - CHECK	
 def out_buff(request):
 	volunteer = request.user
 	
+	if volunteer.is_anonymous():
+		messages.info(request, 'You have not logged in yet')
+		return HttpResponseRedirect('/login/')
+	
 	# if the volunteer is staff
 	vol_bool = volunteer.is_staff
+	
 	# if they stumbled upon this page and they need to clock in, redirect them to the clock in page
 	if not clock_out_check(volunteer):
-		message.info(request, 'You need to clock in before you clock out')
-		return HttpResponseRedirect('/login/')
+		messages.info(request, 'You need to clock in before you clock out')
+		return HttpResponseRedirect('/login/logout')
 
 	# now we will do some fancy conversion to change days and seconds into hours
-	now = timezone.now()
+	now = timezone.localtime(timezone.now()) - timedelta(minutes=240)
 	L = Log.objects.get(volunteer__email = volunteer.email, clock_out = None)
 	L.clock_out = now
 	diff = now - L.clock_in
@@ -271,6 +320,7 @@ def out_buff(request):
 	return HttpResponseRedirect('/login/clock_in')
 
 # here are the functions that will deal with the time stamp 
+# if a user tries to access this page without logging in - CHECK
 def time_stamp(request):
 	# get the volunteer info
 	volunteer = request.user
@@ -285,7 +335,7 @@ def time_stamp(request):
 	user = volunteer.email
 	total_hours = overall_hours(volunteer.email)
 	quart_hours = quarterly_hours(volunteer.email)
-	last_seven = last_seven_sessions(volunteer.email)
+	last_seven = last_seven_sessions_dates(volunteer.email)
 	welcome = "Hello %s, you are at the time stamp portal" % volunteer.email
 	return render(request, 'loginPortal/time_stamp.html', 
 								{	'user' : user, 
@@ -293,46 +343,65 @@ def time_stamp(request):
 									'quarterly_hours' : quart_hours,
 									'last_seven' : last_seven})
 	
-# this is a tiny dictionary that holds all of the work types
+# this is the time stamp buffer that holds all of the logic behind the time stamp system
+# if a user tries to acces this page without logging in - CHECK
+# if the date is past the current date - CHECK
+# if the date is before 2015 - CHECK 
+# if the total hours variable is greater than 24 - CHECK 
+# if the date is invalid - CHECK
+# if the time is invalid - CHECK
+# write the date a midnight to the database - CHECK
 def time_stamp_buff(request):
 	# get some information off of the page
 	volunteer = request.user
+	
+	# if they tried to access this page without loggin in first - redirect them to the login page
+	if volunteer.is_anonymous():
+		messages.info(request, 'You have not logged in yet')
+		return HttpResponseRedirect('/login/')
+	
 	work_type = request.POST['work_type']
 	total_hours = request.POST['total_hours']
 	date = request.POST['date']
-	global_now = datetime.today().date()
+	global_date = datetime.today().date()
 	
 	# check to see if inputs are valid
 	d = validate_date(date)
 	num = validate_float(total_hours)
 	
 	# if the date is not valid
+	if d and num:
+		# if the input date is a day that has yet to happen
+		if d > global_date:
+			messages.info(request, "You cannot enter in a date that has not happened yet")
+	
+		# if they tried to clock in before the apps existence 
+		elif d.year < 2015:
+			messages.info(request, "You cannot enter in a date before 2015")
+		
+		# if they tried to clock in more than 24 hours
+		elif num > 24:
+			messages.info(request, "Bruh plz")
+		
+		# so you can save to the database
+		else:
+			# hack around the timezone issues that I don't wanna deal with right now
+			date_time = datetime(d.year, d.month, d.day, 0, 0, 0)
+			date_time = date_time - timedelta(minutes=300)
+			new_time = volunteer.log_set.create(clock_in = date_time, clock_out = date_time, total_hours = total_hours, work_type = work_types[work_type])
+			new_time.save()
 	if not d:
 		messages.info(request, 'Please enter a valid date')
-	
-	# if the input date is a day that has yet to happen
-	elif d > global_now:
-		messages.info(request, "You cannot enter in a date that has not happened yet")
-	
-	# if they tried to clock in before the apps existence 
-	elif d.year < 2015:
-		messages.info(request, "You cannot enter in a date before 2015")
 	
 	# if the input number is not a number
 	elif not num:
 		messages.info(request, "You must enter in a valid number for the total hours section")
-	
-	# if they tried to clock in more than 24 hours
-	elif num > 24:
-		messages.info(request, "Bruh plz")
-	
-	# if everything works
-	else:
-		new_time = volunteer.log_set.create(clock_in = date, clock_out = date, total_hours = total_hours, work_type = work_types[work_type])
-		new_time.save()
 
+	# return to the time stamp page
 	return HttpResponseRedirect('/login/time_stamp')
-	
+
+# NEED TO CHECK
+# can they go to this page if they haven't logged in? NOPE	
 def missedpunch(request):
 	volunteer = request.user
 	
@@ -351,66 +420,127 @@ def missedpunch(request):
 		return HttpResponseRedirect('/login/')
 		
 	return render(request, 'loginPortal/missedpunch.html', {'user' : volunteer.email, 'overall_hours' : total_hours, 'quarterly_hours' : quart_hours})
-		
+	
+# this is tries to write to the database
+# NEED TO CHECK
+# invalid date - CHECK 
+# invalid time - CHECK
+# enter in a date/time after the current day - CHECK
+# if they try to clock in when they need to clock out - CHECK
+# if they try to clock out at a time before their last clock in - CHECK
+# if they try to clock out at a time that is more than 24 hours after their last clock in - CHECK
+# if they try to clock out when they need to clock in - CHECK
+# if they try to enter a time in which they have already worked - CHECK 
 def missrequest(request):
 	volunteer = request.user
 	user = volunteer.email
 	switch = request.POST['sex']
 	date = request.POST['datepick']
+	in_or_out = request.POST.get('misstable') 
 	work_type = 'a'
+	today = datetime.today()
+	check_out_bool = clock_out_check(volunteer)
 	
-	#military time conversion	
+	#military time conversion
+	time = None	
 	if switch == "female":	
 		time = 12
-	else:
-		time = 0
 	
-	#grabs civilianTime from input on missedpunch page
-	civilianTime = request.POST['missedpunch']	
+	#grabs civilianTime from input on missedpunch page and checks to see if it is valid
+	civilian_time = request.POST['missedpunch']	
 	
-	#converts civilianTime into military time
-	now = str(int(civilianTime[:2]) + time) + civilianTime[2:]
+	#tries to convert the date to a string 
+	d = validate_date(date)
 	
-	#grabs the date and time strings and converts them to datetime
-	d = datetime.strptime(date, "%Y-%m-%d").date()
-	t = datetime.strptime(now, "%H:%M").time()
-	
-	#combines date and time into datetime field
-	finalTime = datetime.combine(d, t).replace(tzinfo=utc)
-	
-	#if the user has selected clock_in do this
-	if request.POST.get('misstable') == 'clock_in':
-		L = volunteer.log_set.create(clock_in = finalTime, work_type = work_type)
-		L.save()
+	# tries to convert the time to a string
+	t = validate_time(civilian_time)
 
-	#if the user has selected clock_out do this	
-	else:
-		L = Log.objects.get(volunteer__email = volunteer.email, clock_out = None)
-		L.clock_out = finalTime
-		diff = finalTime - L.clock_in
-		hours = diff.days * 24 + float(diff.seconds) / 3600
-		L.total_hours = hours
-		# save that stuff
-		L.save()
+	# if we have a valid time and date do all of this stuff
+	if d and t:
+		
+		# so now that both of the inputs are valid, we need to convert to military time and combine the 
+		# date and time
+		final_time = datetime.combine(d, t).replace(tzinfo=utc)
+		if time:
+			final_time = final_time + timedelta(minutes=720)
+		
+		# if the input date is a day that has yet to happen
+		if final_time > today.replace(tzinfo=utc):
+			messages.info(request, "You cannot enter in a date and/or time that has not happened yet")
 	
+		# if they tried to clock in before this apps existence 
+		elif today.date().year < 2015:
+			messages.info(request, "You cannot enter in a date before 2015")
+	
+		elif not new_entry_check(volunteer, final_time):
+			messages.info(request, "You already worked at that time")
+	
+		#if the user has selected clock_in do this
+		elif in_or_out == 'clock_in':
+			# if they can log in - do this, otherwise they need to clock out 
+			if not check_out_bool:
+				L = volunteer.log_set.create(clock_in = final_time, work_type = work_type)
+				L.save()
+			else: 
+				messages.info(request, 'You need to clock out first')
+		
+		#if the user has selected clock_out do this	
+		else:
+			if check_out_bool:
+				L = Log.objects.get(volunteer__email = volunteer.email, clock_out = None)
+				
+				# if the date entered is before the time that they clocked in
+				if final_time < L.clock_in.replace(tzinfo=utc):
+					messages.info(request, 'Please enter a date after your last login %s' % L.clock_in)
+				
+				# if they try to enter in a clock out date that is more than a day 
+				elif (final_time - L.clock_in).total_seconds() > 86400:
+					messages.info(request, 'You cannot enter in a date that is more than a day from your last clock in %s' % L.clock_in)
+				else:
+					L.clock_out = final_time
+					diff = final_time - L.clock_in
+					hours = diff.days * 24 + float(diff.seconds) / 3600
+					L.total_hours = hours
+					# save that stuff
+					L.save()
+			else:
+				messages.info(request, 'You need to clock in first')
+	
+	# if the date is not valid
+	elif not d:
+		messages.info(request, 'Please enter a valid date')
+		
+	# if the time is not valid
+	else:
+		messages.info(request, 'Please enter a valid time')
+	
+	# return to ths missed punch page
 	return HttpResponseRedirect('/login/missedpunch')
 		
-# this is a buffer that will be used to send an email to a user when they want a new password
+# render the page that will send them an email to reset their password
 def new_password(request):
 	return render(request, 'loginPortal/new_password.html', {})
 
+# this will send an email to a user with the desired code
+# it will throw back an error if it is
+# NEED TO CHECK
+# sends email - CHECK
+# won't let you send two emails to yourself, if you haven't changed your password - CHECK
+# sends back an error for a bad email - CHECK
 def new_password_buff(request):
 	# snag their email 
 	email = request.POST['email']
 	
-	# if they are in the database, then send them an email
-	volunteer = Volunteer.objects.get(email = email)
+	# if they are in the database, then send them an email, otherwise throw an error
+	volunteer = None
+	if Volunteer.objects.filter(email = email):
+		volunteer = Volunteer.objects.get(email = email)
 
 	if volunteer:
 		# generate a random string of 20 digits / uppercase letters - save it to the code table
 		code = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(20))
 		if Code.objects.filter(volunteer__email = email):
-			messages.info(request, "We already have a password reset code in the database")
+			messages.info(request, "We already have a password reset code in the database - check your email")
 		else:	
 			EMAIL_CONTENT = 'To change your password, please put this link in your url: (we will figure out a link later - for now, just go to your 127.0.0.1:8000/login/setpassword).'
 			EMAIL_CONTENT += ' Once you are there please enter in your email and this code: '
@@ -426,7 +556,7 @@ def new_password_buff(request):
 	
 	# if we don't recognize their email address
 	else:
-		message.info(request, 'We do not recognize that email address. Please enter a valid email address')
+		messages.info(request, 'We do not recognize that email address. Please enter a valid email address')
 
 	return HttpResponseRedirect('/login/')
 
@@ -444,7 +574,12 @@ reset your password with the appropraite code
 # just return the page prompting the user to enter an email and the code that was emailed to them		
 def set_password(request):
 	return render(request, 'loginPortal/set_password.html', {})
-	
+
+# make sure all of their information goes to the database - redirect them if the any errors arrise	
+# NEED TO CHECK
+# bad email - CHECK
+# bad code - CHECK
+# cant enter in same code twice - CHECK
 def set_password_buff(request):
 	# snag these values from the form on the previous page
 	email = request.POST['email']
@@ -453,8 +588,12 @@ def set_password_buff(request):
 	
 	# check to see if they are a volunteer and if they are in the code database
 	code_bool = Code.objects.filter(volunteer__email = email, code = code)
-	volunteer = Volunteer.objects.get(email__exact = email)
-
+	
+	# if they are in the database, then send them an email, otherwise throw an error
+	volunteer = None
+	if Volunteer.objects.filter(email = email):
+		volunteer = Volunteer.objects.get(email = email)
+	
 	# if there is a code in the database
 	if code_bool:
 		# reset their password, save the change, then remove that line from the database
@@ -463,11 +602,16 @@ def set_password_buff(request):
 		code_bool = Code.objects.get(volunteer__email = email, code = code)
 		code_bool.delete()
 		messages.info(request, "Your password has successfully been reset")
+	elif volunteer:
+		messages.info(request, 'You entered a valid email address, but the code was incorrect. Please try again!')
 	else:
-		messages.info(request, 'You entered a valid email address, but the password was incorrect. Please try again!')
+		messages.info(request, 'We do not recognize that email or you may have not requested a password reset')
+		
 	
 	return HttpResponseRedirect('/login/')
 
-# below are some error handlers
-def error403(request):
-	HttpResponse("hello")
+# Below is a 403 handler
+def handler403(request):
+	response = render(request, 'loginPortal/403.html', {})
+	response.status_code = 403
+	return response

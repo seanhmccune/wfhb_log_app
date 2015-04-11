@@ -4,8 +4,7 @@
 from django.conf.urls import patterns, url
 from loginPortal import views
 
-handler403 = views.error403
-
+handler403 = 'loginPortal.views.handler403'
 urlpatterns = patterns( ' ', 
 	# ex /login/ - below it is when we pass in an extra argument (when the user cannot login and is redirected)
 	url(r'^$', views.my_login, name="login"),
@@ -47,5 +46,4 @@ urlpatterns = patterns( ' ',
 	
 	# this is the logout buffer, it will bring you back to the login page after loggin a user out
 	url(r'^logout/$', views.my_logout, name="logout"),
-	
 )

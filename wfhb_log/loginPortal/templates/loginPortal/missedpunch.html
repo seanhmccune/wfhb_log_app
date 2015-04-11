@@ -7,7 +7,11 @@
 	<span style="float: left; padding: 1%; text-align: left;">
 	Total Hours: {{ overall_hours }}
 	<br />
-	
+	{% if messages %}
+		{% for message in messages %}
+			{{ message }} <br>
+		{% endfor %}
+	{% endif %}
 	Total Quarterly Hours: {{ quarterly_hours }}
 	</span>
 	
