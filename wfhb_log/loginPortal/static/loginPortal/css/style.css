@@ -1,6 +1,9 @@
 @charset "UTF-8";
 /* CSS Document */
 
+@charset "UTF-8";
+/* CSS Document */
+
 #page {
 	background-color: #C12340;
 	margin: auto;
@@ -9,7 +12,15 @@
 	text-align: center;
 	font-family: Verdana;
 	position: relative;
-	padding-top: 1%;
+	padding-top: 2%;
+	}
+		
+#error {
+	background-color: #FFEEEC;
+	color: #C41230;
+	font-size: 16px;
+	padding: 1%;
+	padding-bottom: 2%;
 	}
 		
 #content {
@@ -25,7 +36,7 @@
 	}
 	
 #login {
-	background-color: #c41230;
+	background-color: #C41230;
 	padding: 1.5%;
 	text-align: left;
 	}
@@ -39,7 +50,7 @@ table {
 .dropdownmenu {
    width: 40%;
    padding: 1%;
-   font-size: 23px;
+   font-size: 24px;
    font-family:Verdana;
    color: black; 
    border: 1px solid #999;
@@ -70,29 +81,38 @@ p {
 	}
 	
 h5 {
-	color: #c41230;
+	color: #C41230;
 	text-align: left;
 	}
 
 h2 {
-	color: #C12340;
+	color: #C41230;
 	font-weight: normal;
 	font-size: 20px;
 	}
 	
-form, tr {
-	color: #c41230;
+tr {
+	color: #C41230;
 	font-weight: bold; 
-	font-size: 24px;
+	font-size: 23px;
 	padding: 1%;
 	margin: auto;
-	}	
+	}
 	
 #logininput {
 	width: 95%;
+	font-size: 24px;
+	margin: 1%;
+	padding: .5;
 	}
 	
-input {
+#passwordinput {
+	width: 95%;
+	font-size: 24px;
+	margin: auto;
+	}
+	
+#inputfield {
 	color: black;
 	font-size: 24px;
 	margin: 1%;
@@ -110,7 +130,7 @@ value {
 	border: none; 
 	text-align: center;
 	font-size: 24px;
-	background-color: #c41230;
+	background-color: #C41230;
 	color: white; 
 	cursor: pointer; 
 	margin: auto;
@@ -122,7 +142,7 @@ value {
 	border: none; 
 	text-align: center;
 	font-size: 20px;
-	background-color: #C12340;
+	background-color: #C41230;
 	color: white; 
 	cursor: pointer;
 	width: 20%;
@@ -172,7 +192,7 @@ value {
 #logoutbutton {
 	border: none; 
 	text-align: left;
-	font-size: 14px; 
+	font-size: 16px; 
 	cursor: pointer;
 	font-weight: bold;
 	font-family: Verdana;
@@ -190,19 +210,90 @@ a {
 	text-decoration: underline;
 	} 
 	
-#hourinfo {
-	display: none;
-	}
-	
-dd { 
+#session_table, tr { 
 	background-color: #EAEAEA;
 	color: black;
+	font-size: 12px;
+	width: 40%;
+	margin: auto;
 	}
 	
-dd:nth-child(odd) { 
+tr:nth-child(odd) { 
 	background: #E4E4E4; 
 	}
 
-.log {
-	font-size: 50%;
+#password {
+	font-size: 14px; 
+	color: #C41230; 
+	padding-top: 1%; 
+	float: right;
 	}
+	
+#password:hover {
+	text-decoration: underline;
+	color: #990000;
+	}
+	
+#passwordtop {
+	font-size: 14px;
+	color: #C41230;
+	}
+
+#passwordtop:hover {
+	text-decoration: underline;
+	color: #990000;
+	}
+	
+#newpassword {
+	border: none; 
+	text-align: center;
+	font-size: 15px;
+	background-color: #C41230;
+	color: white; 
+	cursor: pointer;
+	width: 30%;
+	margin: 2%;
+	padding: 1%;
+	border-radius: 0px;
+	font-weight: bold;
+	font-family: Verdana;
+	text-decoration: none;
+	-moz-appearance:none;
+	-webkit-appearance:none;
+	}
+	
+#newpassword:hover {
+	background-color: #990000;
+	}
+	
+  div.ui-datepicker {
+    width: 42.5%;
+    float: left;
+}
+
+#hourinfo {
+	background-color: #EAEAEA;
+	padding: 1%;
+	}
+	
+#submit2 {
+	border: none; 
+	text-align: center;
+	font-size: 14px;
+	background-color: #990000;
+	color: white; 
+	cursor: pointer;
+	width: 30%;
+	margin: 2%;
+	padding: .5%;
+	border-radius: 0px;
+	font-weight: bold;
+	font-family: Verdana;
+	text-decoration: none;
+	-moz-appearance:none;
+	-webkit-appearance:none;
+}
+	
+#submit2:hover {
+	background-color: #C41230;
+}

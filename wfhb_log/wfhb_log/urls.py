@@ -6,6 +6,7 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 admin.autodiscover()
 
+handler403 = 'loginPortal.views.handler403'
 urlpatterns = patterns('',
 	# Examples:
 	# url(r'^$', 'wfhb_log.views.home', name='home'),

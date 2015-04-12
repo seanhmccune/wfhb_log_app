@@ -32,12 +32,17 @@
 
  <br />
 </form>
-
- <br />
- 
- {% for session in last_seven %}
- 	<p class="log"> {{ session }} </p>
- {% endfor %}
-						
-
 {% endblock %}	
+
+{% block hourinfo%} 
+<div id="hourinfo">
+	<table id="session_table">
+		<th>Dates</th><th>Hours</th>
+		{% for session in last_seven %}
+		<tr>
+			<td> {{ session.0 }} </td> <td>{{ session.1 }}</td>
+		</tr>
+		{% endfor %}
+	</table>
+</div>
+{% endblock %}

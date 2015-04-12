@@ -45,10 +45,14 @@ mydiv.style.display = 'block'
 					</dd>
 					</dl>
 					</div>-->
-</form>
-<br />
- {% for session in last_seven %}
- 	<p class="log"> {{ session }} </p>
- {% endfor %}
-					
+</form>			
 {% endblock %}	
+{% block hourinfo%} 
+<div id="hourinfo">
+	<dl>
+		{% for session in last_seven %}
+		<dd> {{ session.0 }} {{ session.1 }}</dd>
+	   	{% endfor %}
+	</dl>
+</div>
+{% endblock %}

@@ -2,6 +2,8 @@
 import os
 BASE_DIR = os.path.abspath(os.path.dirname(__file__)) + os.sep
 
+from django.utils import timezone
+
 # this function will be the new authentication process for the WFHB app - 
 # Instead of authenticating with an username, we use email
 
@@ -30,29 +32,16 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-if (os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine') or
-	os.getenv('SETTINGS_MODE') == 'prod'):
-	# Running on production App Engine, so use a Google Cloud SQL database.
-	DATABASES = {
-		'default': {
-			'ENGINE': 'google.appengine.ext.django.backends.rdbms',
-			'INSTANCE': 'single-will-846:wfhb-log',
-			'NAME': 'wfhb_log',
-		}
+# Running in development, so use a local MySQL database
+# NOTE: remember to add and remove this when using
+DATABASES = {
+	'default': {
+		'ENGINE': 'django.db.backends.mysql',
+		'NAME': 'wfhb_log',
+		'USER': 'root',
+		'PASSWORD': 'RingRingRing506',
 	}
-else:
-	# PLEASE CHANGE THIS WHEN DOING LOCAL DEVELOPMENT!!
-	
-	# Running in development, so use a local MySQL database
-	# NOTE: remember to add and remove this when using
-	DATABASES = {
-		'default': {
-			'ENGINE': 'django.db.backends.mysql',
-			'NAME': 'wfhb_log',
-			'USER': 'root',
-			'PASSWORD': 'RingRingRing506',
-		}
-	}
+}
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
@@ -62,7 +51,7 @@ ALLOWED_HOSTS = []
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
-TIME_ZONE = 'America/Indianapolis'
+TIME_ZONE = 'America/Indiana/Indianapolis'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -126,6 +115,13 @@ TEMPLATE_LOADERS = (
 )
 
 # added the Model Backend class - which gives us the ability to authenticate users
+
+class TimezoneMiddleware(object):
+	def process_request(self, request):
+		tz = request.session.get('django_timezone')
+		if tz:
+			timezone.activate(tz)
+
 MIDDLEWARE_CLASSES = (
 	'django.middleware.common.CommonMiddleware',
 	'django.middleware.csrf.CsrfViewMiddleware',

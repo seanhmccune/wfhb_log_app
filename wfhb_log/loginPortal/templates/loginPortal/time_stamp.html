@@ -8,11 +8,6 @@
 	<br />
 	
 	Total Quarterly Hours: {{ quarterly_hours }}
-	{% if messages %}
-		{% for message in messages %}
-			{{ message }} <br>
-		{% endfor %}
-	{% endif %}
 	</span>
 	
 	<span id="logoutbutton">
@@ -25,6 +20,13 @@
 	</span>	
 	
 	<br /><br />
+	{% if messages %}
+	<div id="error">
+		{% for message in messages %}
+			{{ message }} <br>
+		{% endfor %}
+	</div>
+	{% endif %}
 {% endblock %}	
 
 {% block buttons %}
@@ -39,8 +41,8 @@
 				<option value="Other">Other</option>
 			</select>
 			
-			<input type="text" name="total_hours" placeholder="HOURS: 0.0" required>
-			<input type="date" name="date" placeholder="DATE: YYYY-MM-DD" required>
+			<input id="inputfield"type="text" name="total_hours" placeholder="HOURS: 0.0" required>
+			<input id="inputfield"type="date" name="date" placeholder="DATE: YYYY-MM-DD" required>
 		
 		</span>
 		
@@ -51,9 +53,11 @@
 		<span>
 		
 	</form>
-	
-	 {% for session in last_seven %}
-	 	<p class="log"> {{ session }} </p>
-	 {% endfor %}
-	 
+{% endblock %}
+{% block hourinfo%} 
+<dl>
+	{% for session in last_seven %}
+	<dd> {{ session.0 }} {{ session.1 }}</dd>
+   	{% endfor %}
+</dl>
 {% endblock %}
