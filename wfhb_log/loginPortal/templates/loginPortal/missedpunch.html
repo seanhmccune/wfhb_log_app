@@ -4,14 +4,10 @@
 
 {% block page %}
 
-	<span style="float: left; padding: 1%; text-align: left;">
+	<span style="float: left; padding-left: 1%; text-align: left;">
 	Total Hours: {{ overall_hours }}
 	<br />
-	{% if messages %}
-		{% for message in messages %}
-			{{ message }} <br>
-		{% endfor %}
-	{% endif %}
+	
 	Total Quarterly Hours: {{ quarterly_hours }}
 	</span>
 	
@@ -25,6 +21,14 @@
 	</span>	
 	
 	<br /><br />
+	
+	{% if messages %}
+	<div id="error">
+		{% for message in messages %}
+			{{ message }} <br>
+		{% endfor %}
+	</div>
+	{% endif %}
 
 {% endblock %}	
 
@@ -37,20 +41,19 @@
     <span style="background-color: #E4E4E4; padding: 2%;">
     
       				
-    	<select class="dropdownmenu" name="misstable">
-			<option selected style="display: none">Choose One:</option>
+    	<select class="dropdownmenu" name="misstable" required>
 			<option value="clock_in">CLOCK-IN</option>
 			<option value="clock_out">CLOCK-OUT</option>
 		</select>
         			
 	<br /><br />
-	<input  type="text" name="datepick" placeholder="DATE: YYYY-MM-DD" id="d" required/> 
+	<input  type="text" name="datepick" placeholder="DATE: YYYY-MM-DD" id="inputfield" required/> 
 						
-	<input type="text" name="missedpunch" placeholder="MISSED TIME: 00:00" required>
+	<input type="text" name="missedpunch" placeholder="MISSED TIME: 00:00" id="inputfield"required>
 								
 	<span style="color: black; font-size: 15px; background-color: none;">
-		<input type="radio" name="sex" value="male">AM
-		<input type="radio" name="sex" value="female">PM
+		<input type="radio" name="sex" value="male" required/>AM
+		<input type="radio" name="sex" value="female" required/>PM
 	</span>
 	
 <center> <input id="submitbutton" value="SUBMIT" type="submit"> </center>
@@ -61,3 +64,14 @@
 <br /><br /><br /><br /><br /><br />
 					
 {% endblock %}	
+{% block hourinfo%} 
+<div id="hourinfo">
+	<table>
+		<tr>
+			{% for session in last_seven %}
+			<td> {{ session.0 }} </td> <td>{{ session.1 }}</td>
+		   	{% endfor %}
+		</tr>
+	</table>
+</div>
+{% endblock %}
