@@ -49,10 +49,13 @@ mydiv.style.display = 'block'
 {% endblock %}	
 {% block hourinfo%} 
 <div id="hourinfo">
-	<dl>
+	<table id="session_table">
+		<th>Dates</th><th>Hours</th>
 		{% for session in last_seven %}
-		<dd> {{ session.0 }} {{ session.1 }}</dd>
-	   	{% endfor %}
-	</dl>
+		<tr>
+			<td> {{ session.0 }} </td> <td>{{ session.1 }}</td>
+		</tr>
+		{% endfor %}
+	</table>
 </div>
 {% endblock %}

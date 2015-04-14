@@ -436,6 +436,7 @@ def missrequest(request):
 	in_or_out = request.POST.get('misstable') 
 	work_type = 'a'
 	today = datetime.today()
+	print today
 	check_out_bool = clock_out_check(volunteer)
 	
 	#military time conversion
@@ -458,7 +459,7 @@ def missrequest(request):
 		# so now that both of the inputs are valid, we need to convert to military time and combine the 
 		# date and time
 		final_time = datetime.combine(d, t).replace(tzinfo=utc)
-		if btn:
+		if btn and t.hour < 12:
 			final_time = final_time + timedelta(minutes=720)
 		
 		# if the input date is a day that has yet to happen
