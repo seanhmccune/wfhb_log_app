@@ -99,6 +99,14 @@ tr {
 	margin: auto;
 	}
 	
+input {
+	display:inline-block;
+	margin-right:auto;
+	color: black;
+	font-size: 24px;
+
+	}
+	
 #logininput {
 	width: 95%;
 	font-size: 24px;
@@ -120,17 +128,17 @@ tr {
 	}
 	
 label {
-	display: table-column;
-	width: 1%;
-	float: left;
-	padding-left: 15%;
+	display:inline-block;
+	width: 30%;
+	text-align: right;
+	padding: 1%;
+	color:black;
 	}
 
 value { 
 	border: none; 
-	text-align: center;
 	font-size: 24px;
-	background-color: #C41230;
+	background-color: #c41230;
 	color: white; 
 	cursor: pointer; 
 	margin: auto;
@@ -296,4 +304,15 @@ tr:nth-child(odd) {
 	
 #submit2:hover {
 	background-color: #C41230;
+}
+
+li {
+	display:inline-block;
+	float:right;
+	clear:right;
+
+	font-size: 20px;
+	color:red;
+
+
 }

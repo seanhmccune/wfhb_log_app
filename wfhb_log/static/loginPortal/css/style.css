@@ -80,7 +80,7 @@ h2 {
 	font-size: 20px;
 	}
 	
-form, tr {
+tr {
 	color: #c41230;
 	font-weight: bold; 
 	font-size: 24px;
@@ -93,22 +93,22 @@ form, tr {
 	}
 	
 input {
+	display:inline-block;
+	margin-right:auto;
 	color: black;
 	font-size: 24px;
-	margin: 1%;
-	padding: .5%;
 	}
 	
 label {
-	display: table-column;
-	width: 1%;
-	float: left;
-	padding-left: 15%;
+	display:inline-block;
+	width: 30%;
+	text-align: right;
+	padding: 1%;
+	color:black;
 	}
 
 value { 
 	border: none; 
-	text-align: center;
 	font-size: 24px;
 	background-color: #c41230;
 	color: white; 
@@ -206,3 +206,11 @@ dd:nth-child(odd) {
 .log {
 	font-size: 50%;
 	}
+	
+li {
+	display:inline-block;
+	float:right;
+	clear:right;
+	font-size: 20px;
+	color:red;
+}
