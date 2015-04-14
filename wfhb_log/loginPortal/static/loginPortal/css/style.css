@@ -274,11 +274,11 @@ tr:nth-child(odd) {
 	background-color: #990000;
 	}
 	
-  div.ui-datepicker {
+/*  div.ui-datepicker {
     width: 42.5%;
     float: left;
 }
-
+*/
 #hourinfo {
 	background-color: #EAEAEA;
 	padding: 1%;
