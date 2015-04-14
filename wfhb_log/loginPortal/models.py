@@ -175,5 +175,5 @@ class RegiForm(forms.Form):
         	password2 = self.cleaned_data.get('password2')
         	if password and password2:
             		if password != password2:
-                		raise forms.ValidationError(_("The two password fields didn't match."))
+                		raise forms.ValidationError(_("Passwords didn't match."))
         		return password
