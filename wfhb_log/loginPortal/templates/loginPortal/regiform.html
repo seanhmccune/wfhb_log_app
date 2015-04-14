@@ -12,9 +12,9 @@
 {% endblock %}
 
 {% block buttons %}	
-<form action="/login/regi/" method="POST">{% csrf_token %}
+<form style="text-align: left" action="/login/regi/" method="POST">{% csrf_token %}
 {{ form.as_p }}
-<input id="submitbutton" type="submit" value="Submit" />
+<center><input style="float: none" id="submitbutton" type="submit" value="Submit" /></center>
 </form>
 
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css"> 

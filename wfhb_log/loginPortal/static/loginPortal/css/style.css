@@ -131,13 +131,14 @@ label {
 	display:inline-block;
 	width: 30%;
 	text-align: right;
-	padding: 1%;
+	font-size: 18px;
+	padding: .5%;
 	color:black;
 	}
 
 value { 
 	border: none; 
-	font-size: 24px;
+	font-size: 22px;
 	background-color: #c41230;
 	color: white; 
 	cursor: pointer; 
@@ -310,8 +311,8 @@ li {
 	display:inline-block;
 	float:right;
 	clear:right;
-
-	font-size: 20px;
+	
+	font-size: 18px;
 	color:red;
 
 
