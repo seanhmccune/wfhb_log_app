@@ -37,9 +37,9 @@ MANAGERS = ADMINS
 DATABASES = {
 	'default': {
 		'ENGINE': 'django.db.backends.mysql',
-		'NAME': 'tutorial',
+		'NAME': 'wfhb_log',
 		'USER': 'root',
-		'PASSWORD': 'apwinzanguitar86',
+		'PASSWORD': 'RingRingRing506',
 	}
 }
 

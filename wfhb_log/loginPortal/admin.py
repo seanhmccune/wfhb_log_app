@@ -46,7 +46,7 @@ def export_csv_vol(modeladmin, request, queryset):
 		])
 	
 	return response
-	
+	  
 def export_csv_log(modeladmin, request, queryset):
 	# instead of text/html, we render the repsonse as a text/csv file
 	response = HttpResponse(mimetype='text/csv')
@@ -164,10 +164,10 @@ class VolunteerAdmin(UserAdmin):
 class LogAdmin(admin.ModelAdmin):
 	# these two changes will determine what shows up in the logs search
 	list_display = ('volunteer', 'clock_in', 'clock_out', 'total_hours', 'work_type')
-	search_fields = ('volunteer__email',)
+	search_fields = ('volunteer__email', 'volunteer__first_name', 'volunteer__last_name',)
 	
 	# we can now filter based on work type and volunteer
-	list_filter = ['volunteer', 'work_type']
+	list_filter = ['work_type', 'volunteer__is_staff']
 	actions = [export_csv_log]
 	
 # this helps us register the new user with the admin

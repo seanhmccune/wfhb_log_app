@@ -13,10 +13,14 @@ from datetime import datetime, timedelta, date, time
 from django.utils.timezone import utc
 from django.contrib import messages
 from django.conf import settings
+from django.core.mail import send_mail
 import random, string
 
 # make sure that the user that we will use in the view corresponds to a volunteer
 user = get_user_model()
+
+# the person who will send all of the emails
+EMAIL_HOST_USER = 'wfhbDevTeam@gmail.com'
 
 # this is a tiny dictionary that holds all of the work types
 work_types = dict()
@@ -124,6 +128,11 @@ def last_seven_sessions_dates(email):
 		date = entry.clock_in.date()
 		dates.append((date, round(entry.total_hours, 2)))
 	return dates
+
+# This is a function that emails someone once a user has hit thiry hours for a single session
+def email_cleveland(volunteer):
+	message = str(volunteer.email) + ' ,' + str(volunteer.first_name) + ' ' + str(volunteer.last_name) + ' has volunteered for at least 30 hours this quarter'
+	send_mail(str(volunteer.email) + ' quarterly hours', message, EMAIL_HOST_USER, [EMAIL_HOST_USER])
 
 #this is a registration form
 def regi(request):
@@ -302,6 +311,9 @@ def out_buff(request):
 		messages.info(request, 'You need to clock in before you clock out')
 		return HttpResponseRedirect('/login/logout')
 
+	# check the quarterly hours for this volunteer
+	quart_hours = quarterly_hours(volunteer.email)
+
 	# now we will do some fancy conversion to change days and seconds into hours
 	now = timezone.localtime(timezone.now()) - timedelta(minutes=240)
 	L = Log.objects.get(volunteer__email = volunteer.email, clock_out = None)
@@ -309,6 +321,12 @@ def out_buff(request):
 	diff = now - L.clock_in
 	hours = diff.days * 24 + float(diff.seconds) / 3600
 	L.total_hours = hours
+	
+	# check the quarterly hours for this volunteer, if they have just gone past 30 hours for this quarter 
+	# send cleveland an email
+	quart_hours = quarterly_hours(volunteer.email)
+	if quart_hours < 30 and quart_hours + hours >= 30:
+		email_cleveland(volunteer)
 	
 	# save that stuff
 	L.save()
@@ -385,6 +403,13 @@ def time_stamp_buff(request):
 			date_time = datetime(d.year, d.month, d.day, 0, 0, 0)
 			date_time = date_time - timedelta(minutes=300)
 			new_time = volunteer.log_set.create(clock_in = date_time, clock_out = date_time, total_hours = total_hours, work_type = work_types[work_type])
+			
+			# check the quarterly hours for this volunteer, if they have just gone past 30 hours for this
+			# quarter send cleveland an email
+			quart_hours = quarterly_hours(volunteer.email)
+			if quart_hours < 30 and quart_hours + num >= 30:
+				email_cleveland(volunteer)
+			
 			new_time.save()
 	if not d:
 		messages.info(request, 'Please enter a valid date')
@@ -508,6 +533,13 @@ def missrequest(request):
 					diff = final_time - L.clock_in
 					hours = diff.days * 24 + float(diff.seconds) / 3600
 					L.total_hours = hours
+					
+					# check the quarterly hours for this volunteer, if they have just gone past 30 hours for 
+					# this quarter, send cleveland an email
+					quart_hours = quarterly_hours(volunteer.email)
+					if quart_hours < 30 and quart_hours + hours >= 30:
+						email_cleveland(volunteer)
+					
 					# save that stuff
 					L.save()
 			else:

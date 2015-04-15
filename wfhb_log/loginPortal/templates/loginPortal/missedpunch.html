@@ -66,12 +66,13 @@
 {% endblock %}	
 {% block hourinfo%} 
 <div id="hourinfo">
-	<table>
+	<table id="session_table">
+		<th>Dates</th><th>Hours</th>
+		{% for session in last_seven %}
 		<tr>
-			{% for session in last_seven %}
 			<td> {{ session.0 }} </td> <td>{{ session.1 }}</td>
-		   	{% endfor %}
 		</tr>
+		{% endfor %}
 	</table>
 </div>
 {% endblock %}
