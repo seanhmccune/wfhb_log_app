@@ -47,7 +47,7 @@ def new_entry_check(volunteer, date):
 	for entry in past_entries:
 		if not entry.clock_in or not entry.clock_out: 
 			break
-		if date >= entry.clock_in and date < entry.clock_out:
+		if date > entry.clock_in and date < entry.clock_out:
 			check = False
 			break
 			
@@ -88,37 +88,27 @@ def overall_hours(email):
 	return overall_hours
 	
 # just check the last quarterly hours
-def quarterly_hours(email):
-	# this will help us figure out the total quarterly hours on the views
-	global_now = datetime.today().date()
-	global_year = global_now.year
-	date_list = [ 
-		date(global_year, 1, 1), 
-		date(global_year, 4, 1), 
-		date(global_year, 7, 1), 
-		date(global_year, 10, 1)
-	]
+def quarterly_hours(volunteer):
+	# find the current year,  use that for the lower and upper bound
+	current_date = timezone.now().date()
+	lower_bound = date(current_date.year, volunteer.start_date.month, volunteer.start_date.day)
+	upper_bound = date(current_date.year + 1, volunteer.start_date.month, volunteer.start_date.day)
 	
-	# cycle through the dates to see where to start and end
-	for i in range(0, len(date_list)):
-		start = date_list[ i ]
-		end = date_list[ i + 1 % 4 ]
-		# if we found the right two times break out of the loop
-		if global_now >= start and global_now < end:
-			# if you are looking at the last quarter, we need to update the end date by 1 year
-			if i == len(date_list):
-				end = end + datetime.timedelta(years = 1)
-			break
+	if lower_bound > current_date:
+		upper_bound = lower_bound
+		lower_bound = date(current_date.year - 1, volunteer.start_date.month, volunteer.start_date.day)
 	
-	# snag the hours for just this quarter
-	quarterly_hours_raw = Log.objects.filter(volunteer__email = email, clock_in__gte = start, clock_in__lte = end).aggregate(Sum('total_hours'))
-	quarterly_hours = quarterly_hours_raw['total_hours__sum']
-	if quarterly_hours:
-		quarterly_hours = round(quarterly_hours, 2)
+	# find the totaly number of hours that they have worked in the past year
+	yearly_hours_raw = Log.objects.filter(volunteer__email = volunteer.email, clock_in__gte = lower_bound, clock_in__lte = upper_bound).aggregate(Sum('total_hours'))
+	yearly_hours = yearly_hours_raw['total_hours__sum']
+	
+	if yearly_hours:
+		yearly_hours = round(yearly_hours,2)
 	else:
-		quarterly_hours = 0
-		
-	return quarterly_hours
+		yearly_hours = 0
+	
+	check_date = date(current_date.year, volunteer.start_date.month + 4, volunteer.start_date.day)	
+	return (yearly_hours, current_date >= check_date) 
 
 # try to snag the last 7 work sessions	
 def last_seven_sessions_dates(email):
@@ -162,7 +152,6 @@ def regi(request):
 		  
 # this is a buffer view that will eventually become the authentication portal
 def my_login(request):
-	print settings.TIME_ZONE
 	return render(request, 'loginPortal/login.html', {})
 
 # log a user out and return back to the login page
@@ -229,7 +218,7 @@ def clock_in(request):
 	# Otherwise, snag all of the times when this volunteer logged in overall and quarterly		
 	user = volunteer.email
 	total_hours = overall_hours(volunteer.email)
-	quart_hours = quarterly_hours(volunteer.email)
+	quart_hours = quarterly_hours(volunteer)
 	last_seven = last_seven_sessions_dates(volunteer.email)
 	
 	# if the volunteer is staff
@@ -238,7 +227,7 @@ def clock_in(request):
 	return render( request, 'loginPortal/clock_in.html', 
 									{'user' : user, 
 									  'overall_hours' : total_hours, 
-									  'quarterly_hours' : quart_hours,
+									  'quarterly_hours' : quart_hours[0],
 									  'last_seven': last_seven })
 
 # writes to the database after a user has clocked in 
@@ -261,7 +250,8 @@ def log_buff(request):
 		messages.info(request, 'You need to clock out before you clock-in')
 		return HttpResponseRedirect('/login/logout')
 
-	clock_in = timezone.localtime(timezone.now()) - timedelta(minutes=240)
+	clock_in = timezone.now()
+	clock_in_date = clock_in.date()
 	work_type = 'a'	
 	L = volunteer.log_set.create(clock_in = clock_in, work_type = work_type)
 	L.save()
@@ -283,7 +273,7 @@ def clock_out(request):
 	# Otherwise, snag all of the times when this volunteer logged in overall and quarterly		
 	user = volunteer.email
 	total_hours = overall_hours(volunteer.email)
-	quart_hours = quarterly_hours(volunteer.email)
+	quart_hours = quarterly_hours(volunteer)
 	last_seven = last_seven_sessions_dates(volunteer.email)
 	
 	# if the volunteer is staff
@@ -291,7 +281,7 @@ def clock_out(request):
 	
 	return render(request, 'loginPortal/clock_out.html', {'user' : user, 
 		 													 'overall_hours' : total_hours, 
-														  	 'quarterly_hours' : quart_hours,
+														  	 'quarterly_hours' : quart_hours[0],
 															 'last_seven': last_seven})
 			
 # this is the buffer that helps users clock out
@@ -312,10 +302,10 @@ def out_buff(request):
 		return HttpResponseRedirect('/login/logout')
 
 	# check the quarterly hours for this volunteer
-	quart_hours = quarterly_hours(volunteer.email)
+	quart_hours = quarterly_hours(volunteer)
 
 	# now we will do some fancy conversion to change days and seconds into hours
-	now = timezone.localtime(timezone.now()) - timedelta(minutes=240)
+	now = timezone.now()
 	L = Log.objects.get(volunteer__email = volunteer.email, clock_out = None)
 	L.clock_out = now
 	diff = now - L.clock_in
@@ -324,8 +314,8 @@ def out_buff(request):
 	
 	# check the quarterly hours for this volunteer, if they have just gone past 30 hours for this quarter 
 	# send cleveland an email
-	quart_hours = quarterly_hours(volunteer.email)
-	if quart_hours < 30 and quart_hours + hours >= 30:
+	quart_hours = quarterly_hours(volunteer)
+	if quart_hours[0] < 30 and quart_hours[0] + hours >= 30 and quart_hours[1]:
 		email_cleveland(volunteer)
 	
 	# save that stuff
@@ -347,14 +337,14 @@ def time_stamp(request):
 	# find their total hours
 	user = volunteer.email
 	total_hours = overall_hours(volunteer.email)
-	quart_hours = quarterly_hours(volunteer.email)
+	quart_hours = quarterly_hours(volunteer)
 	last_seven = last_seven_sessions_dates(volunteer.email)
 	
 	welcome = "Hello %s, you are at the time stamp portal" % volunteer.email
 	return render(request, 'loginPortal/time_stamp.html', 
 								{	'user' : user, 
 									'overall_hours' : total_hours, 
-									'quarterly_hours' : quart_hours,
+									'quarterly_hours' : quart_hours[0],
 									'last_seven' : last_seven})
 	
 # this is the time stamp buffer that holds all of the logic behind the time stamp system
@@ -377,7 +367,7 @@ def time_stamp_buff(request):
 	work_type = request.POST['work_type']
 	total_hours = request.POST['total_hours']
 	date = request.POST['date']
-	global_date = datetime.today().date()
+	global_date = timezone.now().date()
 	
 	# check to see if inputs are valid
 	d = validate_date(date)
@@ -395,22 +385,22 @@ def time_stamp_buff(request):
 		
 		# if they tried to clock in more than 24 hours
 		elif num > 24:
-			messages.info(request, "Bruh plz")
+			messages.info(request, "You cannot log in for more than 24 hours at a time")
 		
 		# so you can save to the database
 		else:
 			# hack around the timezone issues that I don't wanna deal with right now
 			date_time = datetime(d.year, d.month, d.day, 0, 0, 0)
-			date_time = date_time - timedelta(minutes=300)
-			new_time = volunteer.log_set.create(clock_in = date_time, clock_out = date_time, total_hours = total_hours, work_type = work_types[work_type])
+			new_time = volunteer.log_set.create(clock_in = date_time.replace(tzinfo=utc), clock_out = date_time.replace(tzinfo=utc), total_hours = total_hours, work_type = work_types[work_type])
 			
 			# check the quarterly hours for this volunteer, if they have just gone past 30 hours for this
 			# quarter send cleveland an email
-			quart_hours = quarterly_hours(volunteer.email)
-			if quart_hours < 30 and quart_hours + num >= 30:
+			quart_hours = quarterly_hours(volunteer)
+			if quart_hours[0] < 30 and quart_hours[0] + num >= 30 and quart_hours[1]:
 				email_cleveland(volunteer)
 			
 			new_time.save()
+			messages.info(request, "You successfully entered clocked in at %s for %d hours" % (d, num))
 	if not d:
 		messages.info(request, 'Please enter a valid date')
 	
@@ -433,7 +423,7 @@ def missedpunch(request):
 	
 	# loads missedpunch page
 	total_hours = overall_hours(volunteer.email)
-	quart_hours = quarterly_hours(volunteer.email)
+	quart_hours = quarterly_hours(volunteer)
 	last_seven = last_seven_sessions_dates(volunteer.email)
 	
 	# if they stumbled upon this page and they need to clock out, redirect them to the clock out page
@@ -441,7 +431,7 @@ def missedpunch(request):
 		messages.info(request, 'This page is not for you')
 		return HttpResponseRedirect('/login/')
 		
-	return render(request, 'loginPortal/missedpunch.html', {'user' : volunteer.email, 'overall_hours' : total_hours, 'quarterly_hours' : quart_hours, 'last_seven' : last_seven})
+	return render(request, 'loginPortal/missedpunch.html', {'user' : volunteer.email, 'overall_hours' : total_hours, 'quarterly_hours' : quart_hours[0], 'last_seven' : last_seven})
 	
 # this is tries to write to the database
 # NEED TO CHECK
@@ -460,8 +450,7 @@ def missrequest(request):
 	date = request.POST['datepick']
 	in_or_out = request.POST.get('misstable') 
 	work_type = 'a'
-	today = datetime.today()
-	print today
+	today = timezone.now()
 	check_out_bool = clock_out_check(volunteer)
 	
 	#military time conversion
@@ -484,19 +473,20 @@ def missrequest(request):
 		# so now that both of the inputs are valid, we need to convert to military time and combine the 
 		# date and time
 		final_time = datetime.combine(d, t).replace(tzinfo=utc)
+		final_time_copy = final_time
 		if btn and t.hour < 12:
 			final_time = final_time + timedelta(minutes=720)
 		
 		# if the input date is a day that has yet to happen
-		if final_time > today.replace(tzinfo=utc):
+		if final_time > today:
 			messages.info(request, "You cannot enter in a date and/or time that has not happened yet")
 	
 		# if they tried to clock in before this apps existence 
-		elif today.date().year < 2015:
+		elif final_time.date().year < 2015:
 			messages.info(request, "You cannot enter in a date before 2015")
 	
 		# if they are trying to say they missed a punch during a shift they already worked
-		elif not new_entry_check(volunteer, final_time):
+		elif not new_entry_check(volunteer, final_time + timedelta(minutes = 240)):
 			messages.info(request, "You already worked at that time")
 	
 		# bad time
@@ -511,8 +501,11 @@ def missrequest(request):
 		elif in_or_out == 'clock_in':
 			# if they can log in - do this, otherwise they need to clock out 
 			if not check_out_bool:
+				# the database is in UTC so we have to offset the final_time
+				final_time = final_time + timedelta(minutes = 240)
 				L = volunteer.log_set.create(clock_in = final_time, work_type = work_type)
 				L.save()
+				messages.info(request, 'You just clocked in at %s %s' % (str(final_time_copy)[:19], 'PM' if btn else 'AM' ))
 			else: 
 				messages.info(request, 'You need to clock out first')
 		
@@ -520,9 +513,10 @@ def missrequest(request):
 		else:
 			if check_out_bool:
 				L = Log.objects.get(volunteer__email = volunteer.email, clock_out = None)
-				
+				# the database is in UTC so we have to offset the final_time
+				final_time = final_time + timedelta(minutes = 240)
 				# if the date entered is before the time that they clocked in
-				if final_time < L.clock_in.replace(tzinfo=utc):
+				if final_time < L.clock_in:
 					messages.info(request, 'Please enter a date after your last login %s' % L.clock_in)
 				
 				# if they try to enter in a clock out date that is more than a day 
@@ -536,10 +530,11 @@ def missrequest(request):
 					
 					# check the quarterly hours for this volunteer, if they have just gone past 30 hours for 
 					# this quarter, send cleveland an email
-					quart_hours = quarterly_hours(volunteer.email)
-					if quart_hours < 30 and quart_hours + hours >= 30:
+					quart_hours = quarterly_hours(volunteer)
+					if quart_hours[0] < 30 and quart_hours[0] + hours >= 30 and quart_hours[1]:
 						email_cleveland(volunteer)
 					
+					messages.info(request, 'You just clocked out at %s %s' % (str(final_time_copy)[:19], 'PM' if btn else 'AM' ))
 					# save that stuff
 					L.save()
 			else:
@@ -644,7 +639,7 @@ def set_password_buff(request):
 		code_bool = Code.objects.get(volunteer__email = email, code = code)
 		code_bool.delete()
 		messages.info(request, "Your password has successfully been reset")
-		HttpResponseRedirect('/login/')
+		return HttpResponseRedirect('/login/')
 	elif volunteer:
 		messages.info(request, 'You entered a valid email address, but the code was incorrect. Please try again!')
 	else:
