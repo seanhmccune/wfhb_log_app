@@ -218,6 +218,10 @@ def clock_in(request):
 	if volunteer.is_anonymous():
 		messages.info(request, 'You have not logged in yet')
 		return HttpResponseRedirect('/login/')
+		
+	if not volunteer.is_staff:
+		messages.info(request, 'You do not have permission to access this page. You have been logged out.')
+		return HttpResponseRedirect('/login/logout/')
 			
 	# Otherwise, snag all of the times when this volunteer logged in overall and quarterly		
 	user = volunteer.email
@@ -251,7 +255,7 @@ def log_buff(request):
 	
 	# if they stumbled upon this page and they need to clock out, redirect them to the clock out page
 	if clock_out_check(volunteer):
-		messages.info(request, 'You need to clock out before you clock-in')
+		messages.info(request, 'You need to clock out before you clock-in. Also, you have been logged out')
 		return HttpResponseRedirect('/login/logout')
 
 	clock_in = timezone.now()
@@ -273,6 +277,10 @@ def clock_out(request):
 	if volunteer.is_anonymous():
 		messages.info(request, 'You have not logged in yet')
 		return HttpResponseRedirect('/login/')
+		
+	if not volunteer.is_staff:
+		messages.info(request, 'You do not have permission to access this page. You have been logged out.')
+		return HttpResponseRedirect('/login/logout/')
 	
 	# Otherwise, snag all of the times when this volunteer logged in overall and quarterly		
 	user = volunteer.email
@@ -302,7 +310,7 @@ def out_buff(request):
 	
 	# if they stumbled upon this page and they need to clock in, redirect them to the clock in page
 	if not clock_out_check(volunteer):
-		messages.info(request, 'You need to clock in before you clock out')
+		messages.info(request, 'You need to clock in before you clock out. Also, you have been logged out.')
 		return HttpResponseRedirect('/login/logout')
 
 	# check the quarterly hours for this volunteer
@@ -336,6 +344,10 @@ def time_stamp(request):
 	if volunteer.is_anonymous():
 		messages.info(request, 'You have not logged in yet')
 		return HttpResponseRedirect('/login/')
+		
+	if volunteer.is_staff:
+		messages.info(request, 'You do not have permission to access this page. You have been logged out.')
+		return HttpResponseRedirect('/login/logout/')
 	
 	user = volunteer.email
 	# find their total hours
@@ -424,6 +436,10 @@ def missedpunch(request):
 	if volunteer.is_anonymous():
 		messages.info(request, 'You have not logged in yet')
 		return HttpResponseRedirect('/login/')
+	
+	if not volunteer.is_staff:
+		messages.info(request, 'You do not have permission to access this page. You have been logged out.')
+		return HttpResponseRedirect('/login/logout/')
 	
 	# loads missedpunch page
 	total_hours = overall_hours(volunteer.email)
