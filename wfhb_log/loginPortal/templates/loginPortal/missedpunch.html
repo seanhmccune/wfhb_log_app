@@ -25,10 +25,11 @@
 	{% if messages %}
 	<div id="error">
 		{% for message in messages %}
-			{{ message }} <br>
+			{% if 'safe' in message.tags %}{{ message|safe }}{% else %}{{ message }} {% endif %}<br>
 		{% endfor %}
 	</div>
 	{% endif %}
+	
 
 {% endblock %}	
 

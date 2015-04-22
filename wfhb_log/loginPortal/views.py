@@ -14,6 +14,7 @@ from django.utils.timezone import utc
 from django.contrib import messages
 from django.conf import settings
 from django.core.mail import send_mail
+from django.utils.safestring import mark_safe
 import random, string
 
 # make sure that the user that we will use in the view corresponds to a volunteer
@@ -526,6 +527,7 @@ def missrequest(request):
 				L = volunteer.log_set.create(clock_in = final_time, work_type = work_type)
 				L.save()
 				messages.info(request, 'You just clocked in at %s %s' % (str(final_time_copy)[:19], 'PM' if btn else 'AM' ))
+				messages.info(request, '<a href="/login/clock_out">Go Back</a>', extra_tags='safe')
 			else: 
 				messages.info(request, 'You need to clock out first')
 		
@@ -553,10 +555,12 @@ def missrequest(request):
 					quart_hours = quarterly_hours(volunteer)
 					if quart_hours[0] < 30 and quart_hours[0] + hours >= 30 and quart_hours[1]:
 						email_cleveland(volunteer)
-					
-					messages.info(request, 'You just clocked out at %s %s' % (str(final_time_copy)[:19], 'PM' if btn else 'AM' ))
+					messages.info(request, 'You just clocked out at %s %s' % (str(final_time_copy)[:19], 'PM' if btn else 'AM'))
+					messages.info(request, '<a href="/login/clock_in">Go Back</a>', extra_tags='safe')
 					# save that stuff
 					L.save()
+	
+
 			else:
 				messages.info(request, 'You need to clock in first')
 	
