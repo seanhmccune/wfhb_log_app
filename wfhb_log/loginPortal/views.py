@@ -168,6 +168,10 @@ def my_logout(request):
 # bad email - CHECK
 # if a user treis to acces this without logging in
 def auth_buff(request):
+	if request.method != 'POST':
+		messages.info(request, 'You have not logged in yet')
+		return HttpReponseRedirect('/login/')
+	
 	email = request.POST['email']
 	password = request.POST['password']
 	volunteer = authenticate(email=email, password=password)
