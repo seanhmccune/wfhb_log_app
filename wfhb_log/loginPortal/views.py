@@ -170,7 +170,7 @@ def my_logout(request):
 def auth_buff(request):
 	if request.method != 'POST':
 		messages.info(request, 'You have not logged in yet')
-		return HttpReponseRedirect('/login/')
+		return HttpResponseRedirect('/login/')
 	
 	email = request.POST['email']
 	password = request.POST['password']
