@@ -107,7 +107,7 @@ def quarterly_hours(volunteer):
 	else:
 		yearly_hours = 0
 	
-	check_date = date(current_date.year, volunteer.start_date.month + 4, volunteer.start_date.day)	
+	check_date = date(current_date.year, volunteer.start_date.month + 3, volunteer.start_date.day)	
 	return (yearly_hours, current_date >= check_date) 
 
 # try to snag the last 7 work sessions	
