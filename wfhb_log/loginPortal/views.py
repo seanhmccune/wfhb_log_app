@@ -201,7 +201,7 @@ def auth_buff(request):
 			messages.info(request, 'You are not active in the wfhb database')
 	
 	elif Volunteer.objects.filter(email = email):
-		messages.info(request, 'You entered a valid email address, but the password was incorrect. Please try again!')
+		messages.info(request, 'The password you entered is incorrect. Please try again (make sure your caps lock is off).')
 		
 	# if we can't recognize the email
 	else:

@@ -22,6 +22,11 @@
 	padding: 1%;
 	padding-bottom: 2%;
 	}
+	
+#error a { 
+	color: #C41230;
+	text-decoration: underline;
+	} 
 		
 #content {
 	background-color: #E4E4E4;
@@ -214,9 +219,11 @@ a {
 	text-decoration: none;
 	}
 	
+	
 #logoutbutton:hover { 
 	text-decoration: underline;
 	} 
+	
 	
 #session_table, tr { 
 	background-color: #EAEAEA;
