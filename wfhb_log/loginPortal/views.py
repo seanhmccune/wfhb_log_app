@@ -325,12 +325,6 @@ def out_buff(request):
 	hours = diff.days * 24 + float(diff.seconds) / 3600
 	L.total_hours = hours
 	
-	# check the quarterly hours for this volunteer, if they have just gone past 30 hours for this quarter 
-	# send cleveland an email
-	quart_hours = quarterly_hours(volunteer)
-	if quart_hours[0] < 30 and quart_hours[0] + hours >= 30 and quart_hours[1]:
-		email_cleveland(volunteer)
-	
 	# save that stuff
 	L.save()
 	return HttpResponseRedirect('/login/clock_in')
@@ -418,7 +412,8 @@ def time_stamp_buff(request):
 			
 			new_time.save()
 			messages.info(request, "You successfully entered clocked in at %s for %d hours" % (d, num))
-	if not d:
+	
+	elif not d:
 		messages.info(request, 'Please enter a valid date')
 	
 	# if the input number is not a number

@@ -6,6 +6,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.utils.encoding import smart_str # turns strings into unicode or something like that
+from datetime import datetime, timedelta, date, time
 
 # this is the new user
 from loginPortal.models import Volunteer, Log
@@ -41,7 +42,7 @@ def export_csv_vol(modeladmin, request, queryset):
 			smart_str(obj.email),
 			smart_str(obj.first_name),
 			smart_str(obj.last_name),
-			smart_str(obj.start_date),
+			'Date: ' + smart_str(obj.start_date),
 			smart_str(obj.is_active)
 		])
 	
@@ -67,10 +68,13 @@ def export_csv_log(modeladmin, request, queryset):
 	
 	# go through the result of the query set and put it in the csv file
 	for obj in queryset:
+		in_4 = obj.clock_in - timedelta(minutes = 240)
+		out_4 = obj.clock_out - timedelta(minutes = 240)
+		
 		writer.writerow([
 			smart_str(obj.volunteer),
-			smart_str(obj.clock_in),
-			smart_str(obj.clock_out),
+			'Date: ' + smart_str(in_4.date()) + ' Time: ' + smart_str(in_4.time()),
+			'Date: ' + smart_str(out_4.date()) + ' Time: ' + smart_str(out_4.time()),
 			smart_str(obj.total_hours),
 			smart_str(obj.work_type),
 		])
@@ -155,7 +159,7 @@ class VolunteerAdmin(UserAdmin):
 	)
 	
 	# possible search fields right now
-	search_fields = ('email', 'first_name', 'last_name')
+	search_fields = ('email', 'first_name', 'last_name',)
 	ordering = ('email', )
 	actions = [make_active, export_csv_vol]
 	filter_horizontal = ()
