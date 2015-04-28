@@ -1,9 +1,6 @@
 @charset "UTF-8";
 /* CSS Document */
 
-@charset "UTF-8";
-/* CSS Document */
-
 #page {
 	background-color: #C12340;
 	margin: auto;
@@ -14,8 +11,12 @@
 	position: relative;
 	padding-top: 2%;
 	}
+
+#changepassword:hover {
+	text-decoration: underline;	
+}
 		
-#error {
+.info {
 	background-color: #FFEEEC;
 	color: #C41230;
 	font-size: 16px;
@@ -23,8 +24,22 @@
 	padding-bottom: 2%;
 	}
 	
-#error a { 
+.success {
+	background-color: #D4FFD3;
+	color: #469B44;
+	font-size: 16px;
+	padding: 1%;
+	padding-bottom: 2%;
+	}
+	
+.info a { 
 	color: #C41230;
+	} 
+	
+.success a { 
+	color: #469B44;
+	} 
+.success:hover a { 
 	text-decoration: underline;
 	} 
 		
@@ -171,7 +186,8 @@ value {
 	 
 #submitbutton:hover { 
 	background-color: #990000;
-	} 
+	}
+	 
 
 #radio-button-text {	
 	color: #c41230; 
@@ -320,6 +336,5 @@ li {
 	
 	font-size: 18px;
 	color:red;
-
-
 }
+

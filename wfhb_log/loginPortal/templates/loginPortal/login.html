@@ -4,15 +4,15 @@
 {% block page %}
 <div id="login">
 	LOG IN TO YOUR WFHB ACCOUNT<br>
-	 <a href='/login/newpassword/'>Change Password</a>
+	 <a id = "changepassword" href='/login/newpassword/'>Change Password</a>
 
 </div>
 {% if messages %}
-<div id="error">
-	{% for message in messages %}
-		{{ message }} <br>
-	{% endfor %}
+{% for message in messages %}
+<div "{% if message.tags %}" class="{{ message.tags }}" "{% endif %}">
+	{% if 'safe' in message.tags %}{{ message|safe }}{% else %}{{ message }} {% endif %}
 </div>
+{% endfor %}
 {% endif %}
 
 {% endblock %}

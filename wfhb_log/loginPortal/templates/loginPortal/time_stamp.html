@@ -21,11 +21,11 @@
 	
 	<br /><br />
 	{% if messages %}
-	<div id="error">
-		{% for message in messages %}
-			{{ message }} <br>
-		{% endfor %}
+	{% for message in messages %}
+	<div "{% if message.tags %}" id="{{ message.tags }}" "{% endif %}">
+		{{ message }}
 	</div>
+	{% endfor %}
 	{% endif %}
 {% endblock %}	
 

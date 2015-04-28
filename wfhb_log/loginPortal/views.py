@@ -414,7 +414,7 @@ def time_stamp_buff(request):
 				email_cleveland(volunteer)
 			
 			new_time.save()
-			messages.info(request, "You successfully entered clocked in at %s for %d hours" % (d, num))
+			messages.success(request, "You successfully entered clocked in at %s for %d hours" % (d, num))
 	
 	elif not d:
 		messages.info(request, 'Please enter a valid date')
@@ -524,8 +524,7 @@ def missrequest(request):
 				# the database is in UTC so we have to offset the final_time
 				L = volunteer.log_set.create(clock_in = final_time, work_type = work_type)
 				L.save()
-				messages.info(request, 'You just clocked in at %s %s' % (str(final_time_copy)[:19], 'PM' if btn else 'AM' ))
-				messages.info(request, '<a href="/login/clock_out">Go Back</a>', extra_tags='safe')
+				messages.success(request, 'You just clocked in at %s %s <br /> <a href="/login/clock_out">HOME</a>' % (str(final_time_copy)[:19], 'PM' if btn else 'AM'),extra_tags='safe')
 			else: 
 				messages.info(request, 'You need to clock out first')
 		
@@ -551,8 +550,7 @@ def missrequest(request):
 					quart_hours = quarterly_hours(volunteer)
 					if quart_hours[0] < 30 and quart_hours[0] + hours >= 30 and quart_hours[1]:
 						email_cleveland(volunteer)
-					messages.info(request, 'You just clocked out at %s %s' % (str(final_time_copy)[:19], 'PM' if btn else 'AM'))
-					messages.info(request, '<a href="/login/clock_in">Go Back</a>', extra_tags='safe')
+					messages.success(request, 'You just clocked out at %s %s <br /> <a href="/login/clock_out">HOME</a>' % (str(final_time_copy)[:19], 'PM' if btn else 'AM'), extra_tags='safe' )
 					# save that stuff
 					L.save()
 	
