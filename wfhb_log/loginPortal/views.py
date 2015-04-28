@@ -387,7 +387,10 @@ def time_stamp_buff(request):
 	# if the date is not valid
 	if d and num:
 		# if the input date is a day that has yet to happen
-		if d > global_date:
+		if num < 0:
+			messages.info(request, "Please enter a positive integer")
+		
+		elif d > global_date:
 			messages.info(request, "You cannot enter in a date that has not happened yet")
 	
 		# if they tried to clock in before the apps existence 
@@ -488,8 +491,9 @@ def missrequest(request):
 		
 		# so now that both of the inputs are valid, we need to convert to military time and combine the 
 		# date and time
-		final_time = datetime.combine(d, t).replace(tzinfo=utc)
-		final_time_copy = final_time
+		final_time_copy = datetime.combine(d, t).replace(tzinfo=utc) 
+		final_time = final_time_copy + timedelta(minutes = 240)
+		
 		if btn and t.hour < 12:
 			final_time = final_time + timedelta(minutes=720)
 		
@@ -502,7 +506,7 @@ def missrequest(request):
 			messages.info(request, "You cannot enter in a date before 2015")
 	
 		# if they are trying to say they missed a punch during a shift they already worked
-		elif not new_entry_check(volunteer, final_time + timedelta(minutes = 240)):
+		elif not new_entry_check(volunteer, final_time):
 			messages.info(request, "You already worked at that time")
 	
 		# bad time
@@ -518,7 +522,6 @@ def missrequest(request):
 			# if they can log in - do this, otherwise they need to clock out 
 			if not check_out_bool:
 				# the database is in UTC so we have to offset the final_time
-				final_time = final_time + timedelta(minutes = 240)
 				L = volunteer.log_set.create(clock_in = final_time, work_type = work_type)
 				L.save()
 				messages.info(request, 'You just clocked in at %s %s' % (str(final_time_copy)[:19], 'PM' if btn else 'AM' ))
@@ -530,8 +533,6 @@ def missrequest(request):
 		else:
 			if check_out_bool:
 				L = Log.objects.get(volunteer__email = volunteer.email, clock_out = None)
-				# the database is in UTC so we have to offset the final_time
-				final_time = final_time + timedelta(minutes = 240)
 				# if the date entered is before the time that they clocked in
 				if final_time < L.clock_in:
 					messages.info(request, 'Please enter a date after your last login %s' % L.clock_in)
@@ -555,7 +556,6 @@ def missrequest(request):
 					# save that stuff
 					L.save()
 	
-
 			else:
 				messages.info(request, 'You need to clock in first')
 	
