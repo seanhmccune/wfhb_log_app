@@ -16,7 +16,7 @@ EMAIL_HOST_USER = 'wfhbDevTeam@gmail.com'
 # access to the admin page
 class VolunteerManager(BaseUserManager):
 
-	# creates a normal user, a 'volunteer' if I may
+	# creates a normal user, a 'volunteer' if I say
 	def create_user(self, email, first_name, last_name, address, phone_number, date_of_birth, contact_first_name, contact_last_name, contact_phone_number, relation_to_contact, password):
 		now  = timezone.now()
 		
