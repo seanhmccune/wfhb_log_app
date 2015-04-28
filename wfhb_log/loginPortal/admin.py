@@ -6,7 +6,8 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.utils.encoding import smart_str # turns strings into unicode or something like that
-from datetime import datetime, timedelta, date, time
+from datetime import datetime, timedelta, date
+import time
 
 # this is the new user
 from loginPortal.models import Volunteer, Log
@@ -38,11 +39,13 @@ def export_csv_vol(modeladmin, request, queryset):
 	
 	# now we need to write every row that the Big C 
 	for obj in queryset:
+		s = time.strptime(str(obj.start_date.month) + ' ' + str(obj.start_date.day) + ' ' + str(obj.start_date.year), "%m %d %Y")
+		s = time.strftime("%m/%d/%Y", s)
 		writer.writerow([
 			smart_str(obj.email),
 			smart_str(obj.first_name),
 			smart_str(obj.last_name),
-			'Date: ' + smart_str(obj.start_date),
+			smart_str(s),
 			smart_str(obj.is_active)
 		])
 	
@@ -70,11 +73,15 @@ def export_csv_log(modeladmin, request, queryset):
 	for obj in queryset:
 		in_4 = obj.clock_in - timedelta(minutes = 240)
 		out_4 = obj.clock_out - timedelta(minutes = 240)
+		s_in = time.strptime(str(in_4.month) + ' ' + str(in_4.day) + ' ' + str(in_4.year), "%m %d %Y")
+		s_in = time.strftime("%m/%d/%Y", s_in)
+		s_out = time.strptime(str(out_4.month) + ' ' + str(out_4.day) + ' ' + str(out_4.year), "%m %d %Y")
+		s_out = time.strftime("%m/%d/%Y", s_out)
 		
 		writer.writerow([
 			smart_str(obj.volunteer),
-			'Date: ' + smart_str(in_4.date()) + ' Time: ' + smart_str(in_4.time()),
-			'Date: ' + smart_str(out_4.date()) + ' Time: ' + smart_str(out_4.time()),
+			smart_str(s_in),
+			smart_str(s_out),
 			smart_str(obj.total_hours),
 			smart_str(obj.work_type),
 		])
