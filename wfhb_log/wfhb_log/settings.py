@@ -23,7 +23,7 @@ EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = 'wfhbDevTeam@gmail.com'
 SERVER_EMAIL = 'wfhbDevTeam@gmail.com'
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
