@@ -21,7 +21,7 @@ import random, string
 user = get_user_model()
 
 # the person who will send all of the emails
-EMAIL_HOST_USER = 'wfhbDevTeam@gmail.com'
+EMAIL_HOST_USER = 'manager@wfhb.org'
 
 # this is a tiny dictionary that holds all of the work types
 work_types = dict()
@@ -593,7 +593,7 @@ def new_password_buff(request):
 		if Code.objects.filter(volunteer__email = email):
 			messages.info(request, "We already have a password reset code in the database - check your email")
 		else:	
-			EMAIL_CONTENT = 'To change your password, please put this link in your url: (we will figure out a link later - for now, just go to your 127.0.0.1:8000/login/setpassword).'
+			EMAIL_CONTENT = 'To change your password, please put this link in your url: (we will figure out a link later - for now, just go to your time.wfhb.org/login/setpassword).'
 			EMAIL_CONTENT += ' Once you are there please enter in your email and this code: '
 			EMAIL_CONTENT += code
 		

@@ -8,7 +8,7 @@ from django import forms
 from functools import partial
 
 # this is the email that we will use to send emails
-EMAIL_HOST_USER = 'wfhbDevTeam@gmail.com'
+EMAIL_HOST_USER = 'manager@wfhb.org'
 
 # Create your models here.
 

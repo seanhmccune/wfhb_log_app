@@ -13,15 +13,17 @@ AUTH_USER_MODEL = 'loginPortal.Volunteer'
 # These are the setting that will allow us to send email via gmail
 # WE WILL NEED TO CHANGE THIS WHEN APPLYING THIS TO WFHB
 EMAIL_USE_TLS = True
+
+# what is wfhb's email host?!?!?!?!?!
 EMAIL_HOST = 'smtp.gmail.com'
 
 # change this for WFHB!!!!!!!
-EMAIL_HOST_USER = 'wfhbDevTeam@gmail.com'
+EMAIL_HOST_USER = 'manager@wfhb.org'
 EMAIL_HOST_PASSWORD = 'Patience158'
 EMAIL_PORT = 587
 
-DEFAULT_FROM_EMAIL = 'wfhbDevTeam@gmail.com'
-SERVER_EMAIL = 'wfhbDevTeam@gmail.com'
+DEFAULT_FROM_EMAIL = 'manager@wfhb.org'
+SERVER_EMAIL = 'manager@wfhb.org'
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
