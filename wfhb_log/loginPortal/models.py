@@ -168,7 +168,8 @@ class RegiForm(forms.Form):
 	contact_phone_number = forms.CharField(validators=[phone_regex], max_length=15)
 	relation_to_contact = forms.CharField(max_length=200)
 	password = forms.CharField(label=_("Password"), widget=forms.PasswordInput)
-    	password2 = forms.CharField(label=_("Password (again)"), widget=forms.PasswordInput) 
+    password2 = forms.CharField(label=_("Password (again)"), widget=forms.PasswordInput)
+    captcha_field = forms.CharField()  
 	#password confirmation   	
     	def clean_password2(self):
         	password = self.cleaned_data.get('password')
