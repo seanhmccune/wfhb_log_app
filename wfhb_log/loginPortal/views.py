@@ -129,15 +129,10 @@ def email_cleveland(volunteer):
 #this is a registration form
 def regi(request):
 	if request.method == 'POST':
-		form = RegiForm(request.POST)
+		form = RegiForm(request.POST) 
 		
-		# talk to the reCAPTCHA service  
-        response = captcha.submit(  
-            request.POST.get('recaptcha_challenge_field'),  
-            request.POST.get('recaptcha_response_field'),  
-            '[[ MY PRIVATE KEY ]]',  
-            request.META['REMOTE_ADDR'],) 
-            
+        #response = captcha.submit(request.POST.get('recaptcha_challenge_field'), request.POST.get('recaptcha_response_field'), '[[ MY PRIVATE KEY ]]', request.META['REMOTE_ADDR'],)           
+		
 		if form.is_valid():
 			email = form.cleaned_data['email']
 			first_name = form.cleaned_data['first_name']
@@ -155,36 +150,17 @@ def regi(request):
 			password = form.cleaned_data['password']
 			
 			# see if the user correctly entered CAPTCHA information  
-        	# and handle it accordingly.  
-        	if response.is_valid:  
-            	captcha_response = "YOU ARE HUMAN: %(data)s" % {'data' :  form.data['captcha_field']}  
-        	else:  
-            	captcha_response = 'YOU MUST BE A ROBOT'  
-            	  
-			Volunteer.objects.create_user(email, first_name, last_name, address, phone_number, date_of_birth, contact_first_name, contact_last_name, contact_phone_number, relation_to_contact, password)
-  
-			return HttpResponseRedirect('/login/')
-	else:
-		form = RegiForm()
-	return render(request, 'loginPortal/regiform.html', {'form' : form,  'captcha_response': captcha_response})
-	
- 
-          
-        # see if the user correctly entered CAPTCHA information  
-        # and handle it accordingly.  
-        if response.is_valid:  
-            captcha_response = "YOU ARE HUMAN: %(data)s" % {'data' :  
-        edit_form.data['data_field']}  
-        else:  
-            captcha_response = 'YOU MUST BE A ROBOT'  
-          
-        return render_to_response('mytemplate.html', {  
-                'edit_form': edit_form,  
-                'captcha_response': captcha_response})  
+        	# and handle it accordingly.    
+        	#captcha_response = "YOU ARE HUMAN: %(data)s" % {'data' :  form.data['captcha_field']}  
+        	
+        	Volunteer.objects.create_user(email, first_name, last_name, address, phone_number, date_of_birth, contact_first_name, contact_last_name, contact_phone_number, relation_to_contact, password)
+        	
+        	return HttpResponseRedirect('/login/')
     else:  
-        edit_form = EditForm()  
-        return render_to_response('mytemplate.html', {'edit_form': edit_form})  
-		  
+		form = RegiForm()        	
+    	#captcha_response = 'YOU MUST BE A ROBOT' 
+    return render(request, 'loginPortal/regiform.html', {'form' : form,  'captcha_response': captcha_response}) 
+
 # this is a buffer view that will eventually become the authentication portal
 def my_login(request):
 	return render(request, 'loginPortal/login.html', {})
