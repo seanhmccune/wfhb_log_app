@@ -1,11 +1,14 @@
 # urls.py - loginPortal
 
 # import some stuff we will need from django and our own views pages
-from django.conf.urls import patterns, url
+from django.conf.urls import patterns, include, url
 from loginPortal import views
 
 handler403 = 'loginPortal.views.handler403'
 urlpatterns = patterns( ' ', 
+	
+	url(r'^captcha/', include('captcha.urls')),
+	
 	# ex /login/ - below it is when we pass in an extra argument (when the user cannot login and is redirected)
 	url(r'^$', views.my_login, name="login"),
 

@@ -6,6 +6,7 @@ from django.core.validators import RegexValidator
 from django.core.mail import send_mail
 from django import forms
 from functools import partial
+from captcha.fields import CaptchaField
 
 # this is the email that we will use to send emails
 EMAIL_HOST_USER = 'manager@wfhb.org'
@@ -169,7 +170,7 @@ class RegiForm(forms.Form):
 	relation_to_contact = forms.CharField(max_length=200)
 	password = forms.CharField(label=_("Password"), widget=forms.PasswordInput)
     	password2 = forms.CharField(label=_("Password (again)"), widget=forms.PasswordInput)
-    	captcha_field = forms.CharField()  
+    	captcha = CaptchaField()
 	#password confirmation   	
     	def clean_password2(self):
         	password = self.cleaned_data.get('password')

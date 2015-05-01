@@ -152,6 +152,7 @@ TEMPLATE_DIRS = (
 
 INSTALLED_APPS = (
 	'loginPortal',
+	'captcha',
 	'django.contrib.auth',
 	'django.contrib.contenttypes',
 	'django.contrib.sessions',

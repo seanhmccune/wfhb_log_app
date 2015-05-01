@@ -129,10 +129,7 @@ def email_cleveland(volunteer):
 #this is a registration form
 def regi(request):
 	if request.method == 'POST':
-		form = RegiForm(request.POST) 
-		
-        #response = captcha.submit(request.POST.get('recaptcha_challenge_field'), request.POST.get('recaptcha_response_field'), '[[ MY PRIVATE KEY ]]', request.META['REMOTE_ADDR'],)           
-		
+		form = RegiForm(request.POST)
 		if form.is_valid():
 			email = form.cleaned_data['email']
 			first_name = form.cleaned_data['first_name']
@@ -140,26 +137,17 @@ def regi(request):
 			address = form.cleaned_data['address']
 			phone_number = form.cleaned_data['phone_number']
 			date_of_birth = form.cleaned_data['date_of_birth']
-			#date_of_birth = datetime.date.today()
-			#start_date = datetime.date.today()
 			start_date = form.cleaned_data['start_date']
 			contact_first_name = form.cleaned_data['contact_first_name']
 			contact_last_name = form.cleaned_data['contact_last_name']
 			contact_phone_number = form.cleaned_data['contact_phone_number']
 			relation_to_contact = form.cleaned_data['relation_to_contact']
 			password = form.cleaned_data['password']
-			
-			# see if the user correctly entered CAPTCHA information  
-        	# and handle it accordingly.    
-        	#captcha_response = "YOU ARE HUMAN: %(data)s" % {'data' :  form.data['captcha_field']}  
-        	
-        	Volunteer.objects.create_user(email, first_name, last_name, address, phone_number, date_of_birth, contact_first_name, contact_last_name, contact_phone_number, relation_to_contact, password)
-        	
-        	return HttpResponseRedirect('/login/')
-    else:  
-		form = RegiForm()        	
-    	#captcha_response = 'YOU MUST BE A ROBOT' 
-    return render(request, 'loginPortal/regiform.html', {'form' : form,  'captcha_response': captcha_response}) 
+			Volunteer.objects.create_user(email, first_name, last_name, address, phone_number, date_of_birth, contact_first_name, contact_last_name, contact_phone_number, relation_to_contact, password)  
+			return HttpResponseRedirect('/login/')
+	else:
+		form = RegiForm()
+	return render(request, 'loginPortal/regiform.html', {'form' : form}) 
 
 # this is a buffer view that will eventually become the authentication portal
 def my_login(request):

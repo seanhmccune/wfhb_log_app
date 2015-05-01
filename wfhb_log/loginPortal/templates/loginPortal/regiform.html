@@ -12,34 +12,9 @@
 {% endblock %}
 
 {% block buttons %}	
-<form style="text-align: left" action="/login/regi/" method="POST">{% csrf_token %}
-<table>  
+<form style="text-align: left" action="/login/regi/" method="POST">{% csrf_token %} 
 {{ form.as_p }}
-<tr>  
-        <th>Are you human?</th>  
-        <td>  
-            <span class="validation_error">{{ captcha_response }}</span>  
-          
-            <script type="text/javascript"  
-            src="http://api.recaptcha.net/challenge?k=[[ YOUR PUBLIC KEY ]]">  
-            </script>  
-              
-            <noscript>  
-            <iframe src="http://api.recaptcha.net/noscript?k=[[ YOUR PUBLIC KEY ]]"  
-            height="300" width="500" frameborder="0"></iframe><br>  
-            <textarea name="recaptcha_challenge_field" rows="3" cols="40">  
-            </textarea>  
-            <input type="hidden" name="recaptcha_response_field"   
-            value="manual_challenge">  
-            </noscript>  
-        <td>  
-    </tr>  
-    <tr>  
-        <th></th>  
-
 <center><input style="float: none" id="submitbutton" type="submit" value="SUBMIT" /></center>
-</tr>  
-</table>
 </form>
 
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css"> 
@@ -54,6 +29,7 @@
 
     });
   });
+
   </script>
 
 {% endblock %}
