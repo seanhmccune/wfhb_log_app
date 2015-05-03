@@ -25,7 +25,7 @@ EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = 'manager@wfhb.org'
 SERVER_EMAIL = 'manager@wfhb.org'
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -39,9 +39,9 @@ MANAGERS = ADMINS
 DATABASES = {
 	'default': {
 		'ENGINE': 'django.db.backends.mysql',
-		'NAME': 'tutorial',
-		'USER': 'root',
-		'PASSWORD': 'apwinzanguitar86',
+		'NAME': 'wfhb_time_db',
+		'USER': 'wfhb_time_user',
+		'PASSWORD': 'serveit4wfhb',
 	}
 }
 
