@@ -39,7 +39,7 @@ MANAGERS = ADMINS
 DATABASES = {
 	'default': {
 		'ENGINE': 'django.db.backends.mysql',
-		'NAME': 'wfhb_time_db',
+		'NAME': 'wfhb_time_org_db',
 		'USER': 'wfhb_time_user',
 		'PASSWORD': 'serveit4wfhb',
 	}
@@ -47,7 +47,7 @@ DATABASES = {
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ['www.time.wfhb.org']
+ALLOWED_HOSTS = ['.wfhb.org']
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
